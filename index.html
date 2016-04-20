@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8>
+	<title>test</title>
+</head>
+<body>
+
+<script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
+
+<div id="app">
+    {{ result }}
+</div>
+
+
+<!-- <script src="./vue.js"></script> -->
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    debug: true,
+    result: []
+  },
+  methods: {
+    loadUsers: function() {
+      this.$http.get('http://cv.klemespen.com:3030/search?q={%22query%22:{%22*%22:[%22*%22]}}', function(data, status, request){
+        if(status == 200)
+        {
+          this.result = data;
+        }
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>
