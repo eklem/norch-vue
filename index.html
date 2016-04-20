@@ -10,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
 
 <div id="app">
-    {{ result }}
+    {{ searchresult }}
 </div>
 
 
@@ -20,14 +20,14 @@ new Vue({
   el: '#app',
   data: {
     debug: true,
-    result: []
+    searchresult: []
   },
   methods: {
-    loadUsers: function() {
+    loadSearchresult: function() {
       this.$http.get('http://cv.klemespen.com:3030/search?q={%22query%22:{%22*%22:[%22*%22]}}', function(data, status, request){
         if(status == 200)
         {
-          this.result = data;
+          this.searchresult = data;
         }
       });
     }
