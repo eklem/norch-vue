@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset=utf-8>
-	<title>test</title>
+    <title>test</title>
 </head>
 <body>
 
@@ -10,29 +10,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
 
 <div id="app">
-    {{ searchresult }}
+    {{ searchresult | json }}
 </div>
 
 
 <!-- <script src="./vue.js"></script> -->
 <script>
 new Vue({
-  el: '#app',
-  data: {
-    debug: true,
-    searchresult: []
-  },
-  methods: {
-    loadSearchresult: function() {
-      this.$http.get('http://cv.klemespen.com:3030/search?q={%22query%22:{%22*%22:[%22*%22]}}', function(data, status, request){
-        if(status == 200)
-        {
-          this.searchresult = data;
-        }
-      });
-    }
-  }
-});
+    el: '#app',
+    data: {
+       searchresult: ''
+    },
+
+    ready: function() {
+
+        // GET request
+        this.$http.get('https://gist.githubusercontent.com/eklem/54ff715b424c57694a9d98b8898e7135/raw/581870ebaf1f8b53606ad56cabae8448c78323b1/json.json', function (data) {
+            // set data on vm
+            this.$set('searchresult', data)
+
+        }).error(function (data, status, request) {
+            // handle error
+        })
+
+      }
+})
 </script>
 </body>
 </html>
