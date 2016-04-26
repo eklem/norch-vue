@@ -19,17 +19,17 @@
 new Vue({
     el: '#app',
     data: {
-       searchresult: ''
+       searchresult: []
     },
 
     ready: function() {
 
         // GET request
-        this.$http.get('https://gist.githubusercontent.com/eklem/54ff715b424c57694a9d98b8898e7135/raw/581870ebaf1f8b53606ad56cabae8448c78323b1/json.json', function (data) {
+        this.$http.get('http://cv.klemespen.com:3030/search?q=%7B%22query%22%3A%7B%22*%22%3A%5B%22UX%22%5D%7D%7D', function (data) {
             // set data on vm
-            this.$set('searchresult', data)
-
-        }).error(function (data, status, request) {
+            this.$set('searchresult', data);
+            console.log(data);
+        }).catch(function (data, status, request) {
             // handle error
         })
 
@@ -38,3 +38,5 @@ new Vue({
 </script>
 </body>
 </html>
+
+
