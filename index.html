@@ -24,7 +24,7 @@ new Vue({
     ready: function() {
 
         // GET request
-        this.$http.get('http://cv.klemespen.com:3030/search?q=%7B%22query%22%3A%7B%22*%22%3A%5B%22UX%22%5D%7D%7D', function (data) {
+        this.$http.get('http://146.185.142.231:3030/search?q=%7B%22query%22%3A%7B%22AND%22%3A%5B%7B%22*%22%3A%5B%22test%22%5D%7D%5D%7D%7D', function (data) {
             // set data on vm
             this.$set('searchresult', data);
             console.log(data);
