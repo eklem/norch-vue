@@ -37,6 +37,7 @@ new Vue({
             // query definition
             var q = {};
             q['query'] = [{'AND': [{'*': [querytext] }]}];
+            q['categories'] = [{field: 'tags'}];
             console.log(JSON.stringify(q, null, 4));
             // JSON stringify query object
             q = JSON.stringify(q);
