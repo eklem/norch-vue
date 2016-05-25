@@ -1,0 +1,8 @@
+var jsonfile = require('jsonfile')
+var file = './resultset.json'
+
+jsonfile.readFile(file, function(err, obj) {
+for key in obj.query[0].AND[0] {
+  //console.dir(obj.query[0].AND[0].key[0])
+  console.dir(obj.query[0].AND[0].key[0])
+})

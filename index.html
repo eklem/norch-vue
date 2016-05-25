@@ -11,10 +11,16 @@
 <script src="./norch.js"></script>
 
 <div id="app">
-    <input v-model="query" v-on:keyup="search">
-    <p>Search result for: {{ query | json }}</p>
-    <p>Total hits: {{ searchresult.totalHits | json }}</p>
-    <p>Search result: {{ searchresult | json }}</p>
+    <input v-model="queryinput" v-on:keyup="search">
+    <p v-for="test in searchresult.query[0].AND[0]">Query: {{ test[0] | json }}</p>
+    <p v-if="searchresult.length != 0">Total hits: {{ searchresult.totalHits }}</p>
+    <ul v-if="searchresult.length != 0">
+      <li v-for="items in searchresult.hits">
+        <span v-if="items.document.type === 'Flickr'">Flickr: {{{ items.document.text }}}</span>
+        <span v-if="items.document.type === 'Twitter'">Twitter: {{{ items.document.text }}}</span>
+      </li>
+    </ul>
+    <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
 </div>
 
 <script>
@@ -22,17 +28,31 @@ new Vue({
     el: '#app',
     data: {
         searchresult: [],
-        query: ''
+        queryinput: '',
     },
     methods: {
         search: function() {
-            var querytext = this.query.trim()
+            var querytext = this.queryinput.trim().toLowerCase();
+            
+            // query definition
+            var q = {};
+            q['query'] = [{'AND': [{'*': [querytext] }]}];
+            console.log(JSON.stringify(q, null, 4));
+            // JSON stringify query object
+            q = JSON.stringify(q);
+            console.log(JSON.stringify(q, null, 4));
+            // URI encode query object
+            q = encodeURIComponent(q);
+            console.log(JSON.stringify(q, null, 4));
+            var url = 'http://146.185.142.231:3030/';
+            var endpoint = 'search?q=';
 
             // GET request
-            this.$http.get('http://146.185.142.231:3030/search?q=%7B%22query%22%3A%7B%22AND%22%3A%5B%7B%22*%22%3A%5B%22' + querytext + '%22%5D%7D%5D%7D%7D', function (data) {
+            this.$http.get(url + endpoint + q, function (data) {
+            //this.$http.get('http://146.185.142.231:3030/search?q=%7B%22query%22%3A%7B%22AND%22%3A%5B%7B%22*%22%3A%5B%22' + querytext + '%22%5D%7D%5D%7D%7D', function (data) {
                 // set data on vm
                 this.$set('searchresult', data);
-                console.log(data);
+                //console.log(data);
             }).catch(function (data, status, request) {
                 // handle error
             })
