@@ -1,6 +1,13 @@
 # norch-vuejs-app
 Vue.js frontend to Norch and search-index. 
 
+## Setup
+`norch-vuejs-app` talks to a `[norch](/fergiemcdowall/norch)`-instance. Run it with something like:
+
+```console
+norch -i [search-index-folder] -c http://[norch-vuejs-frontend].com
+```
+
 ## Plans
 First step is to make it talk to [`norch`](https://github.com/fergiemcdowall/norch) JSON API. Together with the [`search-index-indexer`](https://github.com/eklem/search-index-indexer) this will make people able to test their dataset without any coding.
 

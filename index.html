@@ -6,6 +6,8 @@
 </head>
 <body>
 
+<link rel="stylesheet" media="all" href="./cutestrap.css">
+
 <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
 <script src="./norch.js"></script>
@@ -15,11 +17,19 @@
     <p v-if="searchresult.length != 0">{{ searchresult.totalHits }} hits
       <span  v-for="test in searchresult.query[0].AND[0]">for query "{{ test[0] }}"</span>
     </p>
-    <ul v-if="searchresult.length != 0">
+    <h2>Filters</h2>
+    <ul v-if="searchresult.categories.length != 0">
+      <li v-for="filters in searchresult.categories[0].value">
+        {{{ filters.value }}} - {{{ filters.key }}}
+      </li>
+    </uL>	
+    <h2>Results</h2>
+    <ul v-if="searchresult.hits.length != 0">
       <li v-for="items in searchresult.hits">
         {{{ items.document.title }}}
       </li>
     </ul>
+  <p v-if="searchresult.length != 0">Full JSON.ingredients: {{ searchresult.categories[0].value | json }}</p>
   <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
 </div>
 
