@@ -24,11 +24,15 @@
       </li>
     </uL>	
     <h2>Results</h2>
-    <ul v-if="searchresult.hits.length != 0">
-      <li v-for="items in searchresult.hits">
-        {{{ items.document.title }}}
-      </li>
-    </ul>
+    <div id="results" v-if="searchresult.hits.length != 0">
+      <div class="result-item" v-for="items in searchresult.hits">
+        <h3>{{{ items.document.title }}}</h3>
+        <p>{{{ items.document.teaser }}}</p>
+        <img src="{{{ items.document.photo  }}}" alt="Photo of {{{ items.document.title }}}" title="Photo: {{{ items.document.photographer  }}}" />
+        <p>{{{ items.document.cheff }}}</p>
+        
+      </div>
+    </div>
   <p v-if="searchresult.length != 0">Full JSON.ingredients: {{ searchresult.categories[0].value | json }}</p>
   <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
 </div>
