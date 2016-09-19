@@ -10,7 +10,6 @@
 
 <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
-<script src="./norch.js"></script>
 
 <div id="app">
       <label class="textfield">
@@ -18,7 +17,7 @@
         <span class="textfield__label">search input</span>
       </label>
     <p v-if="searchresult.length != 0">{{ searchresult.totalHits }} hits
-      <span  v-for="test in searchresult.query[0].AND[0]">for query "{{ test[0] }}"</span>
+      <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}"</span>
     </p>
     <h2>Filters</h2>
     <ul v-if="searchresult.categories">
@@ -42,51 +41,7 @@
   <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
 </div>
 
-<script>
-var vm = new Vue({
-    el: '#app',
-    data: {
-        searchresult: [],
-        queryinput: 'kake'
-    },
-    ready: function() {
-      this.search();
-    },
-    methods: {
-        search: function() {
-
-            var queryinput = this.queryinput.trim().toLowerCase();
-            var queryinput = queryinput.split(" ");
-            console.log('queryinput undef: ' + queryinput);
-
-            // query definition
-            var q = {};
-            q['query'] = [{'AND': [{'*': queryinput }]}];
-            q['categories'] = [{field: 'ingredients', limit: 10}];
-            q['pageSize'] = 20;
-            console.log('q object: ' + JSON.stringify(q, null, 4));
-            // JSON stringify query object
-            q = JSON.stringify(q);
-            console.log('Stringify q: ' + JSON.stringify(q, null, 4));
-            // URI encode query object
-            q = encodeURIComponent(q);
-            console.log('URIencode q: ' + JSON.stringify(q, null, 4));
-            var url = 'http://oppskrift.klemespen.com:3030/';
-            var endpoint = 'search?q=';
-
-            // GET request
-            this.$http.get(url + endpoint + q, function (data) {
-            //this.$http.get('http://oppskrift.klemespen.com:3030/search?q=%7B%22query%22%3A%7B%22AND%22%3A%5B%7B%22*%22%3A%5B%22' + queryinput + '%22%5D%7D%5D%7D%7D', function (data) {
-                // set data on vm
-                this.$set('searchresult', data);
-                //console.log(data);
-            }).catch(function (data, status, request) {
-                // handle error
-            })
-        }
-    }
-})
-</script>
+<script src="./norch.js"></script>
 </body>
 </html>
 
