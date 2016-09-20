@@ -6,26 +6,24 @@
 </head>
 <body>
 
-<link rel="stylesheet" media="all" href="https://raw.githubusercontent.com/cutestrap/cutestrap/master/dist/css/cutestrap.min.css" />
+<link rel="stylesheet" media="all" href="https://cdn.rawgit.com/cutestrap/cutestrap/master/dist/css/cutestrap.min.css">
 <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
 
-<div id="app">
-      <label class="textfield">
-        <input type="text" v-model="queryinput" v-on:keyup="search" v-on:keyup.enter="search" />
-        <span class="textfield__label">search input</span>
-      </label>
+<div id="app" class="wrapper">
+    <label class="textfield">
+      <input type="text" v-model="queryinput" v-on:keyup.space="search" v-on:keyup.enter="search" /><button v-on:click="search">search</button>
+      <span class="textfield__label">search input</span>
+    </lable>
     <p v-if="searchresult.length != 0">{{ searchresult.totalHits }} hits
       <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}"</span>
     </p>
-    <h2>Filters</h2>
-    <ul v-if="searchresult.categories">
-      <li v-for="filters in searchresult.categories[0].value">
-        {{ filters.value }} - {{ filters.key }}
-      </li>
-    </uL>	
-    <h2>Results</h2>
-    <div id="results" v-if="searchresult.hits">
+    <div v-if="searchresult.categories">
+      <span v-for="filters in searchresult.categories[0].value">
+        <button class="btn--secondary"><span class="disabled">{{ filters.value }}</span> {{ filters.key }}</button>
+      </span>
+    </div>	
+    <div id="results" v-if="searchresult.hits != 0">
       <div class="result-item" v-for="items in searchresult.hits">
         <h3><a v-bind:href="items.document.url">{{ items.document.title }}</a></h3>
         <p>{{ items.document.teaser }}</p>
@@ -36,7 +34,8 @@
         
       </div>
     </div>
-  <p v-if="searchresult.length != 0">Full JSON.ingredients: {{ searchresult.categories[0].value | json }}</p>
+  <p v-if="searchresult.categories">Full JSON.categories: {{ searchresult.categories | json }}</p>
+  <p v-if="searchresult.categories">Full JSON.ingredients: {{ searchresult.categories[0].value | json }}</p>
   <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
 </div>
 

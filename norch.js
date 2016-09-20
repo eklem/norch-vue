@@ -3,7 +3,7 @@ var vm = new Vue({
     el: '#app',
     data: {
         searchresult: [],
-        queryinput: 'kake'
+        queryinput: ''
     },
     ready: function() {
       this.search();
@@ -14,13 +14,12 @@ var vm = new Vue({
             var queryinput = this.queryinput.trim().toLowerCase();
             var queryinput = queryinput.split(" ");
             console.log('queryinput undef: ' + queryinput);
-
             // query definition
             var q = {};
             q['query'] = [{'AND': [{'*': queryinput }]}];
-            q['categories'] = [{field: 'ingredients', limit: 10}];
-            q['pageSize'] = 20;
-            console.log('q object: ' + JSON.stringify(q, null, 4));
+            q['categories'] = [{field: 'ingredients', limit: 5}];
+            q['pageSize'] =  5,
+           console.log('q object: ' + JSON.stringify(q, null, 4));
             // JSON stringify query object
             q = JSON.stringify(q);
             console.log('Stringify q: ' + JSON.stringify(q, null, 4));
