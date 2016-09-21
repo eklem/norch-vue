@@ -15,7 +15,7 @@
       <input type="text" v-model="queryinput" v-on:keyup.space="search" v-on:keyup.enter="search" /><button v-on:click="search">search</button>
       <span class="textfield__label">search input</span>
     </lable>
-    <p v-if="searchresult.length != 0">{{ searchresult.totalHits }} hits
+    <p v-if="searchresult.hits.length != 0">{{ searchresult.totalHits }} hits
       <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}"</span>
     </p>
     <div v-if="searchresult.categories">
@@ -34,9 +34,12 @@
         
       </div>
     </div>
-  <p v-if="searchresult.categories">Full JSON.categories: {{ searchresult.categories | json }}</p>
-  <p v-if="searchresult.categories">Full JSON.ingredients: {{ searchresult.categories[0].value | json }}</p>
-  <p v-if="searchresult.length != 0">Full JSON: {{ searchresult | json }}</p>
+    <h3>JSON.query</h3>
+    <pre v-if="searchresult.categories">{{ searchresult.query | json }}</pre>
+    <h3>JSON.categories</h3>
+    <pre v-if="searchresult.categories">{{ searchresult.categories | json }}</pre>
+    <h3>JSON
+    <pre v-if="searchresult.hits.length != 0">{{ searchresult | json }}</pre>
 </div>
 
 <script src="./norch.js"></script>
