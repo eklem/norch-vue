@@ -3,7 +3,7 @@
   <head>
     <meta charset=utf-8>
     <title>test</title>
-</head>
+  </head>
 <body>
 
 <link rel="stylesheet" media="all" href="https://cdn.rawgit.com/cutestrap/cutestrap/master/dist/css/cutestrap.min.css">
@@ -11,35 +11,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.js"></script>
 
 <div id="app" class="wrapper">
-    <label class="textfield">
-      <input type="text" v-model="queryinput" v-on:keyup.space="search" v-on:keyup.enter="search" /><button v-on:click="search">search</button>
-      <span class="textfield__label">search input</span>
-    </lable>
-    <p v-if="searchresult.hits.length != 0">{{ searchresult.totalHits }} hits
-      <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}"</span>
-    </p>
-    <div v-if="searchresult.categories">
-      <span v-for="filters in searchresult.categories[0].value">
-        <button class="btn--secondary"><span class="disabled">{{ filters.value }}</span> {{ filters.key }}</button>
+  <label class="textfield">
+    <input type="text" v-model="queryinput" v-on:keyup.space="search" v-on:keyup.enter="search" /><button v-on:click="search">search</button>
+    <span class="textfield__label">search input</span>
+  </lable>
+  <p v-if="searchresult.hits.length != 0">{{ searchresult.totalHits }} hits
+    <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}"</span>
+  </p>
+  <div v-if="searchresult.categories">
+    <span v-for="filters in searchresult.categories[0].value">
+      <button class="btn--secondary"><span class="disabled">{{ filters.value }}</span> {{ filters.key }}</button>
+    </span>
+  </div>	
+  <div id="results" v-if="searchresult.hits != 0">
+    <div class="result-item" v-for="items in searchresult.hits">
+      <h3><a v-bind:href="items.document.url">{{ items.document.title }}</a></h3>
+      <p>{{ items.document.teaser }}</p>
+      <span v-if="items.document.photo">
+        <img v-bind:src="items.document.photo" alt="Photo of {{ items.document.title }}" title="Photo: {{ items.document.photographer  }}" />
       </span>
-    </div>	
-    <div id="results" v-if="searchresult.hits != 0">
-      <div class="result-item" v-for="items in searchresult.hits">
-        <h3><a v-bind:href="items.document.url">{{ items.document.title }}</a></h3>
-        <p>{{ items.document.teaser }}</p>
-        <span v-if="items.document.photo">
-          <img v-bind:src="items.document.photo" alt="Photo of {{ items.document.title }}" title="Photo: {{ items.document.photographer  }}" />
-        </span>
-        <p>{{ items.document.cheff }}</p>
-        
-      </div>
+      <p>{{ items.document.cheff }}</p>  
     </div>
+  </div>
+  <div id="json" v-if="searchresult.hits.length != 0">
     <h3>JSON.query</h3>
-    <pre v-if="searchresult.categories">{{ searchresult.query | json }}</pre>
+    <pre>{{ searchresult.query | json }}</pre>
     <h3>JSON.categories</h3>
-    <pre v-if="searchresult.categories">{{ searchresult.categories | json }}</pre>
+    <pre>{{ searchresult.categories | json }}</pre>
     <h3>JSON
-    <pre v-if="searchresult.hits.length != 0">{{ searchresult | json }}</pre>
+    <pre>{{ searchresult | json }}</pre>
+  </div>
 </div>
 
 <script src="./norch.js"></script>
