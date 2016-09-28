@@ -20,7 +20,7 @@
   </p>
   <div v-if="searchresult.categories">
     <span v-for="category in searchresult.categories[0].value">
-      <button  v-bind:href.literal="{'filterinput': 'test'}"  v-on:click="search" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }}</button>
+      <button  v-on:click="filterOn.1" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }}</button>
     </span>
   </div>	
   <div id="results" v-if="searchresult.hits != 0">
@@ -43,8 +43,6 @@
   </div>
 </div>
 
-<script src="./norch.js"></script>
+<script src="./norch3.js"></script>
 </body>
 </html>
-
-
