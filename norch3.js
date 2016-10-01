@@ -49,29 +49,16 @@ var vm = new Vue({
         // Do it like this: http://stackoverflow.com/questions/3010840/loop-through-an-array-in-javascript
         // Or check out how to loop within loop
         var categories = this.searchresult.categories
-        console.dir(JSON.stringify(categories))
-        for(var category in categories){
-          var filtersGroup = categories[category]
-          console.log('Filters group: ')
-          console.dir(JSON.stringify(filtersGroup))
-          //Get out value from key: http://stackoverflow.com/questions/17635866/get-values-from-an-object-in-javascript
-          for(key in filtersGroup) {
-            if(filtersGroup.hasOwnProperty(key)) {
-              var filters = filtersGroup[key];
-              console.log('Filters: ')
-              console.dir(JSON.stringify(filters))
-              // loop through array?
-            }
-          }
-        }
+        var filtersfetched = []
+        categories[0].value.map(function(val) {
+          onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
+          filtersfetched.push(onefilter)
+          return filtersfetched
+        })
+        console.log(JSON.stringify(filtersfetched))
       }).catch(function (data, status, request) {
         // handle error
       })
-      console.log('Filter input: ' + filterinput)
-    },
-    filterOn: function(filter) {
-      //Add filter (on category/bucket)
-      console.dir(filter)
-    },
+    }
   }
 })
