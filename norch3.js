@@ -13,7 +13,8 @@ var vm = new Vue({
     return {
       searchresult,
       queryinput,
-      q
+      q,
+      filters
     }
   },
   ready: function() {
@@ -40,14 +41,9 @@ var vm = new Vue({
       var endpoint = 'search?q='
       // GET request
       this.$http.get(url + endpoint + q, function (data) {
-        // set data on vm
+        // set searchresult on vm
         this.$set('searchresult', data)
-        //console.log(data)
-        // Here should the filters be defined and set
-        //console.dir(JSON.stringify(this.searchresult.categories, null, 4))
-        
-        // Do it like this: http://stackoverflow.com/questions/3010840/loop-through-an-array-in-javascript
-        // Or check out how to loop within loop
+        // set filters on wm
         var categories = this.searchresult.categories
         var filtersfetched = []
         categories[0].value.map(function(val) {
@@ -55,7 +51,8 @@ var vm = new Vue({
           filtersfetched.push(onefilter)
           return filtersfetched
         })
-        console.log(JSON.stringify(filtersfetched))
+        this.$set('filters', filtersfetched)
+        console.log('this.filters: ' + JSON.stringify(this.filters))
       }).catch(function (data, status, request) {
         // handle error
       })
