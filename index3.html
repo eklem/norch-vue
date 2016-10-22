@@ -20,7 +20,7 @@
   </p>
   <div v-if="searchresult.categories">
     <span v-for="(index, category) in searchresult.categories[0].value">
-      <button  v-on:click="filter(this.index)" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }} {{ $index }}</button>
+      <button  v-on:click="filterOn(this.index)" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }} {{ $index }}</button>
     </span>
   </div>	
   <div id="results" v-if="searchresult.hits != 0">

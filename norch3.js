@@ -26,8 +26,6 @@ var vm = new Vue({
       var queryinput = queryinput.split(" ")
       var filterinput = this.filterinput
       var q = this.q
-
-      console.log('queryinput undef: ' + queryinput)
       // query definition
       q['query'] = [{'AND': [{'*': queryinput }]}]
       //console.log('q object: ' + JSON.stringify(q, null, 4))
@@ -57,8 +55,10 @@ var vm = new Vue({
         // handle error
       })
     },
-    filter: function(filternumber) {
+    filterOn: function(filternumber) {
       console.log('filter: ' + filternumber)
+      var filters = this.filters
+      console.dir(JSON.stringify(this.filters[filternumber]))
     }
   }
 })
