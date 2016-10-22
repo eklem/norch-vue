@@ -5,7 +5,7 @@ var vm = new Vue({
     var searchresult = []
     var q = {}
     q['categories'] = [{field: 'ingredients', limit: 5}]
-    q['pageSize'] =  5
+    q['pageSize'] =  10
     var filters = []
     var queryinput = ''
     var filterinput = ''
@@ -56,6 +56,9 @@ var vm = new Vue({
       }).catch(function (data, status, request) {
         // handle error
       })
+    },
+    filter: function(filternumber) {
+      console.log('filter: ' + filternumber)
     }
   }
 })
