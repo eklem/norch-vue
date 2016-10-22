@@ -54,11 +54,16 @@ var vm = new Vue({
       }).catch(function (data, status, request) {
         // handle error
       })
+      this.searcher(url + endpoint + q)
     },
     filterOn: function(filternumber) {
       console.log('filter: ' + filternumber)
       var filters = this.filters
       console.dir(JSON.stringify(this.filters[filternumber]))
+      this.searcher(JSON.stringify(this.filters[filternumber]))
+    },
+    searcher: function(query) {
+      console.log('query in searcher method: ' + query)
     }
   }
 })
