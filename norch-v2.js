@@ -6,6 +6,9 @@ var vm = new Vue({
     var endpoint = 'search?q='
     var searchresult = []
     var q = {}
+    q['categories'] = [{field: 'ingredients', limit: 5}]
+    q['pageSize'] =  10
+    var filters = []
     var queryinput = ''
 
     return {
@@ -13,7 +16,8 @@ var vm = new Vue({
       endpoint,
       searchresult,
       queryinput,
-      q
+      q,
+      filters
     }
   },
   //For predefined queryiput, like "*"
@@ -45,7 +49,19 @@ var vm = new Vue({
       // GET request
       this.$http.get(url + endpoint + q).then((response) => {
         // set searchresult on vm
-        Vue.set(vm, 'searchresult', response)
+        var searchresult = response.body
+        Vue.set(vm, 'searchresult', searchresult)
+        // set filters on wm
+        console.dir(searchresult.categories)
+        var categories = searchresult.categories
+        var filtersfetched = []
+        categories[0].value.map(function(val) {
+          onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
+          filtersfetched.push(onefilter)
+          return filtersfetched
+        })
+        Vue.set(vm, 'filters', filtersfetched)
+        console.log('this.filters: ' + JSON.stringify(this.filters))
       }, (response) => {
         // handle error
         console.log('Some error in vue-resource GET request')
