@@ -6,9 +6,6 @@ var vm = new Vue({
     var endpoint = 'search?q='
     var searchresult = []
     var q = {}
-    q['categories'] = [{field: 'ingredients', limit: 5}]
-    q['pageSize'] =  10
-    var filters = []
     var queryinput = ''
 
     return {
@@ -16,8 +13,7 @@ var vm = new Vue({
       endpoint,
       searchresult,
       queryinput,
-      q,
-      filters
+      q
     }
   },
   //For predefined queryiput, like "*"
@@ -34,45 +30,27 @@ var vm = new Vue({
       // Merge queryinput in query
       q['query'] = [{'AND': [{'*': queryinput }]}]
       // Send q to searcher
-      this.searcher(q)
-    },
-    filterOn: function(filternumber) {
-      console.log('filter: ' + filternumber)
-      var q = this.q
-      console.log('this.q: ' + JSON.stringify(q))
-      var filters = this.filters
-      var filter = this.filters[filternumber]
-      q['filter'] = [filter]
-      // Send q to searcher
+      console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
     },
     searcher: function(q) {
       // JSON stringify q object
-      this.$set('q', q)
+      Vue.set(vm, 'q', q)
       q = JSON.stringify(q)
       // URI encode q object
       q = encodeURIComponent(q)
-      console.log('query in searcher method: ' + q)
+      console.log('Query in searcher method: ' + q)
       var url = this.url
       var endpoint = this.endpoint
       // GET request
-      this.$http.get(url + endpoint + q, function (data) {
+      this.$http.get(url + endpoint + q).then((response) => {
         // set searchresult on vm
-        this.$set('searchresult', data)
-        // set filters on wm
-        var categories = this.searchresult.categories
-        var filtersfetched = []
-        categories[0].value.map(function(val) {
-          onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
-          filtersfetched.push(onefilter)
-          return filtersfetched
-        })
-        this.$set('filters', filtersfetched)
-        console.log('this.filters: ' + JSON.stringify(this.filters))
-      }).catch(function (data, status, request) {
+        Vue.set(vm, 'searchresult', response)
+      }, (response) => {
         // handle error
+        console.log('Some error in vue-resource GET request')
+        console.log(response)
       })
-
     }
   }
 })

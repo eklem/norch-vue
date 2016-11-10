@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.js"></script>
+    <title>test</title>
+  </head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.1/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.js"></script>
+
+<div id="app" class="wrapper">
+  <label class="textfield">
+    <input type="text" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" /><button v-on:click="searchOn">search</button>
+    <span class="textfield__label">search input</span>
+  </label>
+  <div id="json" v-if="searchresult.body">
+    <h3>JSON</h3>
+    <pre>{{searchresult.body.hits}}</pre>
+  </div>
+</div>
+
+<script src="./norch-v2.js"></script>
+</body>
+</html>
