@@ -37,6 +37,16 @@ var vm = new Vue({
       console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
     },
+    filterOn: function(filternumber) {
+      console.log('filter: ' + filternumber)
+      var q = this.q
+      console.log('this.q: ' + JSON.stringify(q))
+      var filters = this.filters
+      var filter = this.filters[filternumber]
+      q['filter'] = [filter]
+      // Send q to searcher
+      this.searcher(q)
+    },
     searcher: function(q) {
       // JSON stringify q object
       Vue.set(vm, 'q', q)
@@ -53,13 +63,15 @@ var vm = new Vue({
         Vue.set(vm, 'searchresult', searchresult)
         // set filters on wm
         console.dir(searchresult.categories)
-        var categories = searchresult.categories
         var filtersfetched = []
-        categories[0].value.map(function(val) {
-          onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
-          filtersfetched.push(onefilter)
-          return filtersfetched
-        })
+        if (searchresult.categories) {
+          var categories = searchresult.categories
+          categories[0].value.map(function(val) {
+            onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
+            filtersfetched.push(onefilter)
+            return filtersfetched
+          })
+        }
         Vue.set(vm, 'filters', filtersfetched)
         console.log('this.filters: ' + JSON.stringify(this.filters))
       }, (response) => {
