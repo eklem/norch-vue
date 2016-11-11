@@ -6,7 +6,7 @@ var vm = new Vue({
     var endpoint = 'search?q='
     var searchresult = []
     var q = {}
-    q['categories'] = [{field: 'ingredients', limit: 5}]
+    q['categories'] = [{field: 'ingredients', limit: 10}]
     q['pageSize'] =  10
     var filters = []
     var queryinput = ''
@@ -38,13 +38,23 @@ var vm = new Vue({
       this.searcher(q)
     },
     filterOn: function(filternumber) {
-      console.log('filter: ' + filternumber)
+      console.log('filter# turned on: ' + filternumber)
       var q = this.q
       console.log('this.q: ' + JSON.stringify(q))
       var filters = this.filters
       var filter = this.filters[filternumber]
       q['filter'] = [filter]
       // Send q to searcher
+      this.searcher(q)
+    },
+    filterOff: function(filternumber) {
+      console.log('filter# turned off: ' + filternumber)
+      console.dir('Categories: ' + JSON.stringify(this.searchresult.categories[0].value))
+      this.searchresult.categories[0].value.splice(filternumber, 1)
+      console.dir('Categories with active filter deleted: ' + JSON.stringify(this.searchresult.categories[0].value))
+      //Needs to be removed from this.q.filter also
+      var q = this.q
+      console.dir(JSON.stringify(q))
       this.searcher(q)
     },
     searcher: function(q) {

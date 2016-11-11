@@ -20,7 +20,7 @@
 
   <!-- ### Search result info (amount and filteredOn ### -->
   <p v-if="searchresult.hits">{{ searchresult.totalHits }} hits
-    <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ query }}" filtered on 
+    <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ queryinput }}" filtered on 
       <span v-if="searchresult.categories">
         <span v-for="(category, index) in searchresult.categories[0].value">
           <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }} {{ index }}</button>
