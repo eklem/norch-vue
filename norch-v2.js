@@ -43,18 +43,39 @@ var vm = new Vue({
       console.log('this.q: ' + JSON.stringify(q))
       var filters = this.filters
       var filter = this.filters[filternumber]
-      q['filter'] = [filter]
+      if (!q.filter) {
+        q['filter'] = []
+      }
+      q.filter.push(filter)
       // Send q to searcher
       this.searcher(q)
     },
     filterOff: function(filternumber) {
-      console.log('filter# turned off: ' + filternumber)
-      console.dir('Categories: ' + JSON.stringify(this.searchresult.categories[0].value))
-      this.searchresult.categories[0].value.splice(filternumber, 1)
-      console.dir('Categories with active filter deleted: ' + JSON.stringify(this.searchresult.categories[0].value))
-      //Needs to be removed from this.q.filter also
       var q = this.q
+      console.log('Filter number: ' + filternumber)
+      // Remove from searchresult.categories (removes it from GUI)
+//      this.searchresult.categories[0].value.splice(filternumber, 1)
+//      console.dir('Categories with active filter deleted: ' + JSON.stringify(this.searchresult.categories[0].value))
+      // Remove from q.filter array. Get index, remove index
+      console.log('q.filter: ')
+      console.dir(JSON.stringify(q.filter))
+      filterToRemove = this.filters[filternumber]
+      console.dir(JSON.stringify(filterToRemove))
+      //var index = q.filter.findIndex(filterToRemove)
+      var keys = Object.keys(filterToRemove),
+        index = q.filter.findIndex(a =>
+          Object.keys(a).length === keys.length && keys.every(k => a[k] === filterToRemove[k]));
+      console.log('index: ' + index)
+      q.filter.splice(index, 1)
+      console.log('q.filter, removed: ')
       console.dir(JSON.stringify(q))
+      // Removing empty q.filter
+      console.log(q.filter.length)
+      if (q.filter.length === 0) {
+        console.log('filter array empty, needs to be removed')
+        delete q.filter
+      }
+      // Send q to searcher
       this.searcher(q)
     },
     searcher: function(q) {

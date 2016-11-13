@@ -23,7 +23,7 @@
     <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ queryinput }}" filtered on 
       <span v-if="searchresult.categories">
         <span v-for="(category, index) in searchresult.categories[0].value">
-          <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }} {{ index }}</button>
+          <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary"><span class="disabled">{{ index }}</span> {{ category.key }}</button>
         </span>
       </span>  
     </span>
@@ -32,7 +32,7 @@
   <!-- ### Categories to filter on ### -->
   <div v-if="searchresult.categories">
     <span v-for="(category, index) in searchresult.categories[0].value">
-      <button v-if="!category.active" v-on:click="filterOn(index)" class="btn btn--secondary"><span class="disabled">{{ category.value }}</span> {{ category.key }} {{ index }}</button>
+      <button v-if="!category.active" v-on:click="filterOn(index)" class="btn btn--secondary"><span class="disabled">{{ index }}</span> {{ category.key }}</button>
     </span>
   </div>  
   
