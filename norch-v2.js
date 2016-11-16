@@ -31,21 +31,26 @@ var vm = new Vue({
   //},
   methods: {
     // Start with data object from scratch: getDefaultData
-    resetData () {
-      Object.assign(this.$data, getDefaultData())
+    resetDataBut(keep) {
+      var def = getDefaultData();
+      def[keep] = this[keep];
+      Object.assign(this.$data, def);
     },
     // Take user input and send to searcher
     searchOn: function() {
       // Trim query input
-      var queryinput = this.queryinput.trim().toLowerCase()
-      var queryinput = queryinput.split(" ")
-      this.resetData()
+      var queryinput = this.queryinput
+      this.resetDataBut(queryinput)
       Vue.set(vm, 'queryinput', queryinput)
+      var queryinput = queryinput.trim().toLowerCase()
+      var queryinput = queryinput.split(" ")
       // Set local q from data function
       var q = this.q
+      console.log('queryinput: ' + queryinput)
       // Merge queryinput in query
       q['query'] = [{'AND': [{'*': queryinput }]}]
       // Send q to searcher
+      console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
     },
     // Applying category filter
