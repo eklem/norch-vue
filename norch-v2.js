@@ -29,10 +29,6 @@ function getDefaultData() {
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
-//  ready: function() {
-  // For predefined queryiput, like "*"
-  //  this.search();
-//  },
   methods: {
     // Start with data object from scratch: getDefaultData
     resetDataBut: function() {
@@ -115,14 +111,19 @@ var vm = new Vue({
         console.log(response)
       })
     },
-    // Adding more results when at bottom of page
+    // Endless scroll: Adding more results when at bottom of page
     endlessScroll: function() {
       this.scrolled = window.scrollY > 0
-      console.log('scrolling...')
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        // you're at the bottom of the page
+        var q = this.q
+        q['pageSize'] += 10
+        this.searcher(q)
+      }
     }
   },
   mounted: function() {
+    // Add event listener for scrolling
     window.addEventListener('scroll', this.endlessScroll);
-    console.log('ready')
   }
 })
