@@ -7,9 +7,12 @@ function getDefaultData() {
   q['categories'] = [{field: 'ingredients', limit: 10}]
   q['pageSize'] =  10
   var filters = []
-  //Keeping queryinput when resetting data
-  if (typeof queryinput == 'undefined') {
+  //Keeping queryinput when resetting data and defining queryinput if not defined
+  if (typeof queryinput != 'undefined') {
+    console.log('getDefaultData - Hello queryinput: ' + queryinput)
+  } else if (typeof queryinput == 'undefined') {
     queryinput = ''
+    console.log('queryinput undefined')
   }
   return {
     url,
@@ -17,7 +20,8 @@ function getDefaultData() {
     searchresult,
     q,
     filters,
-    queryinput
+    queryinput,
+    scrolled: false
   }
 }
 
@@ -25,16 +29,14 @@ function getDefaultData() {
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
-  //For predefined queryiput, like "*"
-  //ready: function() {
+//  ready: function() {
+  // For predefined queryiput, like "*"
   //  this.search();
-  //},
+//  },
   methods: {
     // Start with data object from scratch: getDefaultData
-    resetDataBut(keep) {
-      var def = getDefaultData();
-      def[keep] = this[keep];
-      Object.assign(this.$data, def);
+    resetDataBut: function() {
+      Object.assign(this.$data, getDefaultData())
     },
     // Take user input and send to searcher
     searchOn: function() {
@@ -112,6 +114,15 @@ var vm = new Vue({
         console.log('Some error in vue-resource GET request')
         console.log(response)
       })
+    },
+    // Adding more results when at bottom of page
+    endlessScroll: function() {
+      this.scrolled = window.scrollY > 0
+      console.log('scrolling...')
     }
+  },
+  mounted: function() {
+    window.addEventListener('scroll', this.endlessScroll);
+    console.log('ready')
   }
 })
