@@ -23,18 +23,18 @@
     <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ queryinput }}"
       <span v-if="searchresult.categories">
         filtered on 
-        <span v-for="(category, index) in searchresult.categories[0].value">
-          <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary">{{ category.key }} <span class="disabled">{{ category.value }}</span></button>
-        </span>
+        <template v-for="(category, index) in searchresult.categories[0].value">
+          <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary" style="margin:0 5px 5px 0">{{ category.key }} <span class="disabled">X</span></button>
+        </template>
       </span>  
     </span>
   </p>
 
   <!-- ### Categories to filter on ### -->
   <div v-if="searchresult.categories">
-    <span v-for="(category, index) in searchresult.categories[0].value">
-      <button v-if="!category.active" v-on:click="filterOn(index)" class="btn btn--secondary">{{ category.key }} <span class="disabled">{{ category.value }}</span></button>
-    </span>
+    <template v-for="(category, index) in searchresult.categories[0].value">
+      <button v-if="!category.active" v-on:click="filterOn(index)" class="btn btn--secondary" style="margin:0 5px 5px 0;">{{ category.key }} <span class="disabled">{{ category.value }}</span></button>
+    </template>
   </div>  
   
   <!-- ### Search results ### -->
