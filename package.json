@@ -1,0 +1,24 @@
+{
+  "name": "norch-vuejs-app",
+  "version": "0.0.1",
+  "description": "Search frontend for Norch search engine, written in vue.js",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eklem/norch-vuejs-app.git"
+  },
+  "keywords": [
+    "search",
+    "vuejs",
+    "javascript"
+  ],
+  "author": "Espen Klem",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eklem/norch-vuejs-app/issues"
+  },
+  "homepage": "https://github.com/eklem/norch-vuejs-app#readme"
+}

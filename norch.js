@@ -1,53 +1,129 @@
-// setup fielded search, filters, limits, etc.
+// Default data: setup fielded search, filters, limits, etc.
+function getDefaultData() {
+  var url = 'http://oppskrift.klemespen.com:3030/'
+  var endpoint = 'search?q='
+  var searchresult = []
+  var q = {}
+  q['categories'] = [{field: 'ingredients', limit: 10}]
+  q['pageSize'] =  10
+  var filters = []
+  //Keeping queryinput when resetting data and defining queryinput if not defined
+  if (typeof queryinput != 'undefined') {
+    console.log('getDefaultData - Hello queryinput: ' + queryinput)
+  } else if (typeof queryinput == 'undefined') {
+    queryinput = ''
+    console.log('queryinput undefined')
+  }
+  return {
+    url,
+    endpoint,
+    searchresult,
+    q,
+    filters,
+    queryinput,
+    scrolled: false
+  }
+}
+
+// Vue instance
 var vm = new Vue({
   el: '#app',
-  data: {
-    searchresult: [],
-    queryinput: '',
-    filterinput: ''
-  },
-  ready: function() {
-    this.search();
-  },
+  data: getDefaultData(),
   methods: {
-    search: function() {
-      var queryinput = this.queryinput.trim().toLowerCase()
+    // Start with data object from scratch: getDefaultData
+    resetDataBut: function() {
+      Object.assign(this.$data, getDefaultData())
+    },
+    // Take user input and send to searcher
+    searchOn: function() {
+      // Trim query input
+      var queryinput = this.queryinput
+      this.resetDataBut(queryinput)
+      Vue.set(vm, 'queryinput', queryinput)
+      var queryinput = queryinput.trim().toLowerCase()
       var queryinput = queryinput.split(" ")
-      var filterinput = this.filterinput
-
-      console.log('queryinput undef: ' + queryinput)
-      // query definition
-      var q = {}
+      // Set local q from data function
+      var q = this.q
+      console.log('queryinput: ' + queryinput)
+      // Merge queryinput in query
       q['query'] = [{'AND': [{'*': queryinput }]}]
-      q['categories'] = [{field: 'ingredients', limit: 5}]
-      q['pageSize'] =  5
-      console.log('q object: ' + JSON.stringify(q, null, 4))
-      // JSON stringify query object
+      // Send q to searcher
+      console.log('Query in searchOn method: ' + JSON.stringify(this.q))
+      this.searcher(q)
+    },
+    // Applying category filter
+    filterOn: function(filternumber) {
+      var q = this.q
+      var filters = this.filters
+      var filter = this.filters[filternumber]
+      if (!q.filter) {
+        q['filter'] = []
+      }
+      q.filter.push(filter)
+      // Send q to searcher
+      this.searcher(q)
+    },
+    // Removing filter
+    filterOff: function(filternumber) {
+      var q = this.q
+      // Remove from q.filter array. Get index, remove index
+      filterToRemove = this.filters[filternumber]
+      var keys = Object.keys(filterToRemove),
+        index = q.filter.findIndex(a =>
+          Object.keys(a).length === keys.length && keys.every(k => a[k] === filterToRemove[k]));
+      q.filter.splice(index, 1)
+      // Removing empty q.filter for norch to work
+      if (q.filter.length === 0) {
+        delete q.filter
+      }
+      // Send q to searcher
+      this.searcher(q)
+    },
+    // searcher: Actually querying norch
+    searcher: function(q) {
+      console.log('Query in searcher method: ' + JSON.stringify(q))
+      // JSON stringify q object
+      Vue.set(vm, 'q', q)
       q = JSON.stringify(q)
-      console.log('Stringify q: ' + JSON.stringify(q, null, 4))
-      // URI encode query object
+      // URI encode q object
       q = encodeURIComponent(q)
-      console.log('URIencode q: ' + JSON.stringify(q, null, 4))
-      var url = 'http://oppskrift.klemespen.com:3030/'
-      var endpoint = 'search?q='
+      var url = this.url
+      var endpoint = this.endpoint
       // GET request
-      this.$http.get(url + endpoint + q, function (data) {
-        //this.$http.get('http://oppskrift.klemespen.com:3030/search?q=%7B%22query%22%3A%7B%22AND%22%3A%5B%7B%22*%22%3A%5B%22' + queryinput + '%22%5D%7D%5D%7D%7D', function (data) {
-        // set data on vm
-        this.$set('searchresult', data)
-          //console.log(data)
-      }).catch(function (data, status, request) {
+      this.$http.get(url + endpoint + q).then((response) => {
+        // set searchresult on vm
+        var searchresult = response.body
+        Vue.set(vm, 'searchresult', searchresult)
+        // set filters on wm
+        var filtersfetched = []
+        if (searchresult.categories) {
+          var categories = searchresult.categories
+          categories[0].value.map(function(val) {
+            onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
+            filtersfetched.push(onefilter)
+            return filtersfetched
+          })
+        }
+        Vue.set(vm, 'filters', filtersfetched)
+      }, (response) => {
         // handle error
+        console.log('Some error in vue-resource GET request')
+        console.log(response)
       })
-      console.log('Filter input: ' + filterinput)
     },
-    filterOn: function(filterinput) {
-      //Add filter (on category/bucket)
-      
-      console.dir(filterinput)
-    },
-    filterOff: function() {
-      //Remove filter already added (on category/bucket
+    // Endless scroll: Adding more results when at bottom of page
+    endlessScroll: function() {
+      this.scrolled = window.scrollY > 0
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        // you're at the bottom of the page
+        var q = this.q
+        q['pageSize'] += 10
+        this.searcher(q)
+      }
     }
+  },
+  mounted: function() {
+    // Add event listener for scrolling
+    window.addEventListener('scroll', this.endlessScroll);
   }
 })
