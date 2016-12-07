@@ -63,16 +63,16 @@ var vm = new Vue({
       this.$http.get(url + endpoint + q).then((response) => {
         // Regex to extract objects from stream and push to array
         const regex = /{.*}/g;
-        let hits
+        let results
         var searchresult = []
-        while ((hits = regex.exec(response.body)) !== null) {
+        while ((results = regex.exec(response.body)) !== null) {
           // This is necessary to avoid infinite loops with zero-width matches
-          if (hits.index === regex.lastIndex) {
+          if (results.index === regex.lastIndex) {
             regex.lastIndex++;
           }
           // The result can be accessed through the `m`-variable.
-          hits.forEach((match) => {
-            //console.log(`Found match: ${match}`);
+          results.forEach((match) => {
+            console.log(`Found match: ${match}`);
             searchresult.push(JSON.parse(match))
           })
           // set searchresult on vm

@@ -23,6 +23,7 @@
   <div id="results" v-if="searchresult[0]">
     <div class="result-item" v-for="items in searchresult">
       <h3>{{ items.document.Varenavn }}</h3>
+      <pre>{{ items.document }}</pre>
     </div>
   </div>
 
@@ -33,6 +34,6 @@
   </div>
 </div>
 
-<script src="./norch-v2b.js"></script>
+<script src="./norch.js"></script>
 </body>
 </html>
