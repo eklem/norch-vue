@@ -16,7 +16,7 @@
     "javascript"
   ],
   "dependencies": {
-    "norch": "0.7.1",
+    "norch": "0.7.1"
   },
   "author": "Espen Klem",
   "license": "MIT",

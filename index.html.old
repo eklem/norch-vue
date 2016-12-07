@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8>
+    <link rel="stylesheet" media="all" href="https://cdn.rawgit.com/cutestrap/cutestrap/master/dist/css/cutestrap.min.css">
+    <title>test</title>
+  </head>
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.1/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.js"></script>
+
+<div id="app" class="wrapper" v-on:scroll="endlessScroll">
+  
+  <!-- ### Search box ### -->
+  <label class="textfield">
+    <input type="text" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" /><button v-on:click="searchOn">search</button>
+    <span class="textfield__label">search input</span>
+  </label>
+
+  <!-- ### Search result info (amount and filteredOn ### -->
+  <p v-if="searchresult.hits">{{ searchresult.totalHits }} hits
+    <span  v-for="query in searchresult.query[0].AND[0]">for query "{{ queryinput }}"
+      <span v-if="searchresult.categories">
+        filtered on 
+        <template v-for="(category, index) in searchresult.categories[0].value">
+          <button v-if="category.active" v-on:click="filterOff(index)" class="btn btn--secondary" style="margin:0 5px 5px 0">{{ category.key }} <span class="disabled">X</span></button>
+        </template>
+      </span>  
+    </span>
+  </p>
+
+  <!-- ### Categories to filter on ### -->
+  <div v-if="searchresult.categories">
+    <template v-for="(category, index) in searchresult.categories[0].value">
+      <button v-if="!category.active" v-on:click="filterOn(index)" class="btn btn--secondary" style="margin:0 5px 5px 0;">{{ category.key }} <span class="disabled">{{ category.value }}</span></button>
+    </template>
+  </div>  
+  
+  <!-- ### Search results ### -->
+  <div id="results" v-if="searchresult">
+    <div class="result-item" v-for="items in searchresult.hits">
+      <h3><a v-bind:href="items.document.url">{{ items.document.title }}</a></h3>
+      <p>{{ items.document.teaser }}</p>
+      <span v-if="items.document.photo">
+        <img v-bind:src="items.document.photo" :alt="items.document.title" :title="items.document.photographer" />
+      </span>
+      <p>{{ items.document.cheff }}</p>  
+    </div>
+  </div>
+
+  <!-- ### JSON ### -->
+<!--  <div id="json" v-if="searchresult.hits">
+    <h3>this</h3>
+    <pre>{{ filters }}</pre>
+    <h3>JSON.query</h3>
+    <pre>{{ searchresult.query }}</pre>
+    <h3>JSON.categories</h3>
+    <pre>{{ searchresult.categories }}</pre>
+    <h3>JSON</h3>
+    <pre>{{ searchresult }}</pre>
+  </div>-->
+</div>
+
+<script src="./norch.js"></script>
+</body>
+</html>

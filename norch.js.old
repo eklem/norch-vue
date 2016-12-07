@@ -4,7 +4,9 @@ function getDefaultData() {
   var endpoint = 'search?q='
   var searchresult = []
   var q = {}
+//  q['categories'] = [{field: 'ingredients', limit: 10}]
   q['pageSize'] =  10
+  var filters = []
   //Keeping queryinput when resetting data and defining queryinput if not defined
   if (typeof queryinput != 'undefined') {
     console.log('getDefaultData - Hello queryinput: ' + queryinput)
@@ -17,6 +19,7 @@ function getDefaultData() {
     endpoint,
     searchresult,
     q,
+    filters,
     queryinput,
     scrolled: false
   }
@@ -49,6 +52,34 @@ var vm = new Vue({
       console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
     },
+    // Applying category filter
+    filterOn: function(filternumber) {
+      var q = this.q
+      var filters = this.filters
+      var filter = this.filters[filternumber]
+      if (!q.filter) {
+        q['filter'] = []
+      }
+      q.filter.push(filter)
+      // Send q to searcher
+      this.searcher(q)
+    },
+    // Removing filter
+    filterOff: function(filternumber) {
+      var q = this.q
+      // Remove from q.filter array. Get index, remove index
+      filterToRemove = this.filters[filternumber]
+      var keys = Object.keys(filterToRemove),
+        index = q.filter.findIndex(a =>
+          Object.keys(a).length === keys.length && keys.every(k => a[k] === filterToRemove[k]));
+      q.filter.splice(index, 1)
+      // Removing empty q.filter for norch to work
+      if (q.filter.length === 0) {
+        delete q.filter
+      }
+      // Send q to searcher
+      this.searcher(q)
+    },
     // searcher: Actually querying norch
     searcher: function(q) {
       console.log('Query in searcher method: ' + JSON.stringify(q))
@@ -61,23 +92,20 @@ var vm = new Vue({
       var endpoint = this.endpoint
       // GET request
       this.$http.get(url + endpoint + q).then((response) => {
-        // Regex to extract objects from stream and push to array
-        const regex = /{.*}/g;
-        let hits
-        var searchresult = []
-        while ((hits = regex.exec(response.body)) !== null) {
-          // This is necessary to avoid infinite loops with zero-width matches
-          if (hits.index === regex.lastIndex) {
-            regex.lastIndex++;
-          }
-          // The result can be accessed through the `m`-variable.
-          hits.forEach((match) => {
-            //console.log(`Found match: ${match}`);
-            searchresult.push(JSON.parse(match))
+        // set searchresult on vm
+        var searchresult = response.body
+        Vue.set(vm, 'searchresult', searchresult)
+        // set filters on wm
+        var filtersfetched = []
+        if (searchresult.categories) {
+          var categories = searchresult.categories
+          categories[0].value.map(function(val) {
+            onefilter = {field: categories[0].key, gte: val.key, lte: val.key}
+            filtersfetched.push(onefilter)
+            return filtersfetched
           })
-          // set searchresult on vm
-          Vue.set(vm, 'searchresult', searchresult)
         }
+        Vue.set(vm, 'filters', filtersfetched)
       }, (response) => {
         // handle error
         console.log('Some error in vue-resource GET request')
