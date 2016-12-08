@@ -20,17 +20,19 @@
   </label>
 
   <!-- ### Search results ### -->
-  <div id="results" v-if="searchresult[0]">
-    <div class="result-item" v-for="items in searchresult">
+  <div id="results" v-if="results[0]">
+    <div class="result-item" v-for="items in results[0]">
       <h3>{{ items.document.Varenavn }}</h3>
       <pre>{{ items.document }}</pre>
     </div>
   </div>
 
   <!-- ### JSON ### -->
-  <div id="json" v-if="searchresult[0]">
+  <div id="json" v-if="results[0]">
+    <h3>config</h3>
+    <pre>{{ config }}</pre>
     <h3>JSON</h3>
-    <pre>{{ searchresult }}</pre>
+    <pre>{{ results }}</pre>
   </div>
 </div>
 

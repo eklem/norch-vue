@@ -1,24 +1,42 @@
 // Default data: setup fielded search, filters, limits, etc.
 function getDefaultData() {
-  var url = 'http://oppskrift.klemespen.com:3030/'
-  var endpoint = 'search?q='
-  var searchresult = []
-  var q = {}
-  q['pageSize'] =  10
-  //Keeping queryinput when resetting data and defining queryinput if not defined
+  // Aplication configuration
+  var config = {}
+  config.url = 'http://oppskrift.klemespen.com:3030/'
+  config.endpoint = {}
+  config.endpoint.search = 'search?q='
+  config.endpoint.matcher = 'matcher?q='
+  config.endpoint.categorize = 'categorize?q='
+  config.endpoint.buckets = 'buckets?q='
+  config.categories = ['Varetype', 'Land']
+  config.buckets = [
+    {"field":"Volum","gte":"0.76","lte":"15","set":false},
+    {"field":"Volum","gte":"0","lte":"0.75","set":false}
+  ]
+  // UI Helpers
+  var UIHelpers = {}
+  UIHelpers.scrolled = false
+  //Keeping queryInput when resetting data and defining queryinput if not defined
   if (typeof queryinput != 'undefined') {
-    console.log('getDefaultData - Hello queryinput: ' + queryinput)
+    console.log('getDefaultData - Hello queryInput: ' + queryinput)
   } else if (typeof queryinput == 'undefined') {
     queryinput = ''
     console.log('queryinput undefined')
   }
+  // q-object fed to norch
+  q = {}
+  q['pageSize'] =  10
+  // results back from norch
+  var results = []
+  results['searcresult'] = []
+  results['categories'] = []
+
   return {
-    url,
-    endpoint,
-    searchresult,
-    q,
+    config,
+    UIHelpers,
     queryinput,
-    scrolled: false
+    q,
+    results
   }
 }
 
@@ -57,26 +75,24 @@ var vm = new Vue({
       q = JSON.stringify(q)
       // URI encode q object
       q = encodeURIComponent(q)
-      var url = this.url
-      var endpoint = this.endpoint
+      var config = this.config
       // GET request
-      this.$http.get(url + endpoint + q).then((response) => {
+      this.$http.get(config.url + config.endpoint.search + q).then((response) => {
         // Regex to extract objects from stream and push to array
         const regex = /{.*}/g;
-        let results
+        let items
         var searchresult = []
-        while ((results = regex.exec(response.body)) !== null) {
+        while ((items = regex.exec(response.body)) !== null) {
           // This is necessary to avoid infinite loops with zero-width matches
-          if (results.index === regex.lastIndex) {
+          if (items.index === regex.lastIndex) {
             regex.lastIndex++;
           }
-          // The result can be accessed through the `m`-variable.
-          results.forEach((match) => {
+          items.forEach((match) => {
             console.log(`Found match: ${match}`);
             searchresult.push(JSON.parse(match))
           })
           // set searchresult on vm
-          Vue.set(vm, 'searchresult', searchresult)
+          Vue.set(vm.results, 'searchresult', searchresult)
         }
       }, (response) => {
         // handle error
@@ -86,7 +102,7 @@ var vm = new Vue({
     },
     // Endless scroll: Adding more results when at bottom of page
     endlessScroll: function() {
-      this.scrolled = window.scrollY > 0
+      this.UIHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
         var q = this.q
