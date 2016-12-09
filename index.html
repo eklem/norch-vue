@@ -6,6 +6,7 @@
     <link rel="stylesheet" media="all" href="https://cdn.rawgit.com/cutestrap/cutestrap/master/dist/css/cutestrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.1/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.js"></script>
+    <script src="https://rawgit.com/buhrmi/vue-sync/master/index.js"></script>
     <title>test</title>
   </head>
 <body>
@@ -20,15 +21,15 @@
   </label>
 
   <!-- ### Search results ### -->
-  <div id="results" v-if="results[0]">
-    <div class="result-item" v-for="items in results[0]">
+  <div id="results" v-if="results.searchresult">
+    <div class="result-item" v-for="items in results.searchresult">
       <h3>{{ items.document.Varenavn }}</h3>
       <pre>{{ items.document }}</pre>
     </div>
   </div>
 
   <!-- ### JSON ### -->
-  <div id="json" v-if="results[0]">
+  <div id="json" v-if="results.searchresult">
     <h3>config</h3>
     <pre>{{ config }}</pre>
     <h3>JSON</h3>

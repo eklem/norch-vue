@@ -1,49 +1,75 @@
 // Default data: setup fielded search, filters, limits, etc.
 function getDefaultData() {
-  // Aplication configuration
-  var config = {}
-  config.url = 'http://oppskrift.klemespen.com:3030/'
-  config.endpoint = {}
-  config.endpoint.search = 'search?q='
-  config.endpoint.matcher = 'matcher?q='
-  config.endpoint.categorize = 'categorize?q='
-  config.endpoint.buckets = 'buckets?q='
-  config.categories = ['Varetype', 'Land']
-  config.buckets = [
-    {"field":"Volum","gte":"0.76","lte":"15","set":false},
-    {"field":"Volum","gte":"0","lte":"0.75","set":false}
-  ]
-  // UI Helpers
-  var UIHelpers = {}
-  UIHelpers.scrolled = false
-  //Keeping queryInput when resetting data and defining queryinput if not defined
+  // Keeping queryInput when resetting data and defining queryinput if not defined
   if (typeof queryinput != 'undefined') {
     console.log('getDefaultData - Hello queryInput: ' + queryinput)
   } else if (typeof queryinput == 'undefined') {
     queryinput = ''
-    console.log('queryinput undefined')
+    console.log('queryinput is not defined')
   }
-  // q-object fed to norch
-  q = {}
-  q['pageSize'] =  10
+  // Aplication configuration
+  config = {
+    'url': 'http://oppskrift.klemespen.com:3030/',
+    'endpoint': {
+      'search': 'search?q=',
+      'matcher': 'matcher?q=',
+      'categorize': 'categorize?q=',
+      'buckets': 'buckets?q='
+    },
+    'categories': [
+      'Varetype',
+      'Land'
+    ],
+    'buckets': [
+      {
+        'field': 'Volum',
+        'gte': '0.76',
+        'lte': '15',
+        'set': false
+      },
+      {
+        'field': 'Volum',
+        'gte': '0',
+        'lte': '0.75',
+        'set': false
+      }
+    ]
+  }
+  // UI Helpers
+  uiHelpers = {
+    'scrolled': false
+  }
+  // query object
+  q = {
+    'pageSize': 10
+  }
   // results back from norch
-  var results = []
-  results['searcresult'] = []
-  results['categories'] = []
-
+  results = {
+    'searchresult':  [],
+    'categories': []
+  }
+  // variables returned to vm
   return {
     config,
-    UIHelpers,
+    uiHelpers,
     queryinput,
     q,
     results
   }
 }
 
+// URL sync setup
+Vue.use(VueSync)
+locationSync = VueSync.locationStrategy()
+
+
 // Vue instance
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
+  sync: {
+    q: locationSync('q')
+  },
   methods: {
     // Start with data object from scratch: getDefaultData
     resetDataBut: function() {
@@ -62,7 +88,6 @@ var vm = new Vue({
       console.log('queryinput: ' + queryinput)
       // Merge queryinput in query
       q['query'] = {'AND':{'*':queryinput}}
-    //{"query":{"AND":{"*":["champagne"]}}}
       // Send q to searcher
       console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
@@ -102,7 +127,7 @@ var vm = new Vue({
     },
     // Endless scroll: Adding more results when at bottom of page
     endlessScroll: function() {
-      this.UIHelpers.scrolled = window.scrollY > 0
+      this.uiHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
         var q = this.q
@@ -113,6 +138,7 @@ var vm = new Vue({
   },
   mounted: function() {
     // Add event listener for scrolling
-    window.addEventListener('scroll', this.endlessScroll);
+    window.addEventListener('scroll', this.endlessScroll)
+    console.dir(JSON.stringify(this.q))
   }
 })
