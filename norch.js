@@ -45,7 +45,7 @@ function getDefaultData() {
   }
   // results back from norch
   results = {
-    'searchresult':  [],
+    'searchresults':  [],
     'categories': []
   }
   // variables returned to vm
@@ -62,6 +62,8 @@ function getDefaultData() {
 Vue.use(VueSync)
 locationSync = VueSync.locationStrategy()
 
+// Axios setup
+Vue.prototype.$http = axios
 
 // Vue instance
 var vm = new Vue({
@@ -83,10 +85,10 @@ var vm = new Vue({
       Vue.set(vm, 'queryinput', queryinput)
       var queryinput = queryinput.trim().toLowerCase()
       var queryinput = queryinput.split(" ")
-      // Set local q from data function
+      // Get q from data function
       var q = this.q
       console.log('queryinput: ' + queryinput)
-      // Merge queryinput in query
+      // Merge queryinput into query
       q['query'] = {'AND':{'*':queryinput}}
       // Send q to searcher
       console.log('Query in searchOn method: ' + JSON.stringify(this.q))
@@ -101,29 +103,8 @@ var vm = new Vue({
       // URI encode q object
       q = encodeURIComponent(q)
       var config = this.config
-      // GET request
-      this.$http.get(config.url + config.endpoint.search + q).then((response) => {
-        // Regex to extract objects from stream and push to array
-        const regex = /{.*}/g;
-        let items
-        var searchresult = []
-        while ((items = regex.exec(response.body)) !== null) {
-          // This is necessary to avoid infinite loops with zero-width matches
-          if (items.index === regex.lastIndex) {
-            regex.lastIndex++;
-          }
-          items.forEach((match) => {
-            console.log(`Found match: ${match}`);
-            searchresult.push(JSON.parse(match))
-          })
-          // set searchresult on vm
-          Vue.set(vm.results, 'searchresult', searchresult)
-        }
-      }, (response) => {
-        // handle error
-        console.log('Some error in vue-resource GET request')
-        console.log(response)
-      })
+      querySearchEndpoint(config.url + config.endpoint.search + q, '.results', 'searchresults')
+      console.log('hallo searcher!')
     },
     // Endless scroll: Adding more results when at bottom of page
     endlessScroll: function() {
@@ -142,3 +123,61 @@ var vm = new Vue({
     console.dir(JSON.stringify(this.q))
   }
 })
+
+
+/* Helper functions for querying norch endpoints
+   /docCount
+   /buckets
+   /categorize
+   /get
+   /matcher
+   /search
+   /totalHits */
+
+function querySearchEndpoint(queryURL, objectPath, objectToSet) {
+  // GET request
+  axios.get(queryURL, {responseType: 'blob'})
+    .then(function(response) {
+      readBlob(response.data, function(event) {
+        // use result in callback...
+        processStream(event.target.result, objectPath, objectToSet)
+      })
+    })
+    .catch(function (error) {
+      // handle error
+      console.log('Some error in axios GET request')
+      console.log(error)
+    })
+}
+
+/* Helper functions for processing the response
+   JSON object
+   stream (of JSON objects) */
+
+function processStream(response, objectPath, objectToSet) {
+  // Regex to extract objects from stream and push to array
+  const regex = /{.*}/g;
+  let items
+  var resultsetParsed = []
+  while ((items = regex.exec(response)) !== null) {
+    // This is necessary to avoid infinite loops with zero-width matches
+    if (items.index === regex.lastIndex) {
+      regex.lastIndex++;
+    }
+    items.forEach((match) => {
+      console.log(`Found match: ${match}`);
+      resultsetParsed.push(JSON.parse(match))
+    })
+    // set searchresults on vm
+    // TODO: objectPath (being '.results') + objectToSet (being 'searchresults')
+    // Need to be defined in the searcher, when calling querySearchEndpoint
+    console.log('objectPath: ' + objectPath + ' objectToSet: ' + objectToSet)
+    Vue.set(vm.results, 'searchresults', resultsetParsed)
+  }
+}
+
+function readBlob(blob, onLoadCallback){
+    var reader = new FileReader();
+    reader.onload = onLoadCallback;
+    reader.readAsText(blob);
+}
