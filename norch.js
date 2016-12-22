@@ -7,7 +7,7 @@ function getDefaultData() {
     queryinput = ''
     console.log('queryinput is not defined')
   }
-  // Aplication configuration
+  // Application configuration
   config = {
     'url': 'http://oppskrift.klemespen.com:3030/',
     'endpoint': {
@@ -96,15 +96,13 @@ var vm = new Vue({
     },
     // searcher: Actually querying norch
     searcher: function(q) {
-      console.log('Query in searcher method: ' + JSON.stringify(q))
       // JSON stringify q object
       Vue.set(vm, 'q', q)
       q = JSON.stringify(q)
       // URI encode q object
       q = encodeURIComponent(q)
       var config = this.config
-      querySearchEndpoint(config.url + config.endpoint.search + q, '.results', 'searchresults')
-      console.log('hallo searcher!')
+      querySearchEndpoint(config.url + config.endpoint.search + q, 'searchResult')
     },
     // Endless scroll: Adding more results when at bottom of page
     endlessScroll: function() {
@@ -134,13 +132,13 @@ var vm = new Vue({
    /search
    /totalHits */
 
-function querySearchEndpoint(queryURL, objectPath, objectToSet) {
+function querySearchEndpoint(queryURL, responseType) {
   // GET request
   axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
         // use result in callback...
-        processStream(event.target.result, objectPath, objectToSet)
+        processStream(event.target.result, responseType)
       })
     })
     .catch(function (error) {
@@ -151,10 +149,12 @@ function querySearchEndpoint(queryURL, objectPath, objectToSet) {
 }
 
 /* Helper functions for processing the response
-   JSON object
-   stream (of JSON objects) */
+   a: JSON object or stream (of JSON objects)
+   b: Functions for setting the data in the data model */
 
-function processStream(response, objectPath, objectToSet) {
+
+// Process streams
+function processStream(response, responseType) {
   // Regex to extract objects from stream and push to array
   const regex = /{.*}/g;
   let items
@@ -168,16 +168,24 @@ function processStream(response, objectPath, objectToSet) {
       console.log(`Found match: ${match}`);
       resultsetParsed.push(JSON.parse(match))
     })
-    // set searchresults on vm
-    // TODO: objectPath (being '.results') + objectToSet (being 'searchresults')
-    // Need to be defined in the searcher, when calling querySearchEndpoint
-    console.log('objectPath: ' + objectPath + ' objectToSet: ' + objectToSet)
-    Vue.set(vm.results, 'searchresults', resultsetParsed)
   }
+  setData(resultsetParsed, responseType)
 }
 
+// reading blob as text string
 function readBlob(blob, onLoadCallback){
     var reader = new FileReader();
     reader.onload = onLoadCallback;
     reader.readAsText(blob);
+}
+
+// Switch for selecting correct data model setter
+function setData(resultsetParsed, responseType) {
+  switch (responseType) {
+    case 'searchResult':
+      Vue.set(vm.results, 'searchresults', resultsetParsed)
+      break
+    default:
+      console.log('Error: Wrong switch variable name. Switch ' + responseType + ' don\'t exist')
+  }
 }
