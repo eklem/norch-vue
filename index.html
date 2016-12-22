@@ -22,6 +22,9 @@
 
   <!-- ### Search results ### -->
   <div id="results" v-if="results.searchresults">
+    <div class="result-info">
+      {{ q.pageSize }} of ?? hits for query "{{ queryinput }}" filtered on
+    </div>
     <div class="result-item" v-for="items in results.searchresults">
       <h3>{{ items.document.Varenavn }}</h3>
       <pre>{{ items.document }}</pre>

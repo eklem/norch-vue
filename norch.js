@@ -1,20 +1,15 @@
 // Default data: setup fielded search, filters, limits, etc.
 function getDefaultData() {
-  // Keeping queryInput when resetting data and defining queryinput if not defined
-  if (typeof queryinput != 'undefined') {
-    console.log('getDefaultData - Hello queryInput: ' + queryinput)
-  } else if (typeof queryinput == 'undefined') {
-    queryinput = ''
-    console.log('queryinput is not defined')
-  }
   // Application configuration
   config = {
     'url': 'http://oppskrift.klemespen.com:3030/',
     'endpoint': {
-      'search': 'search?q=',
-      'matcher': 'matcher?q=',
+      'search':     'search?q=',
+      'matcher':    'matcher?q=',
       'categorize': 'categorize?q=',
-      'buckets': 'buckets?q='
+      'buckets':    'buckets?q=',
+      'docCount':   'docCount',
+      'totalHits':  'totalHits?q='
     },
     'categories': [
       'Varetype',
@@ -23,21 +18,23 @@ function getDefaultData() {
     'buckets': [
       {
         'field': 'Volum',
-        'gte': '0.76',
-        'lte': '15',
-        'set': false
+        'gte':   '0.76',
+        'lte':   '15',
+        'set':   false
       },
       {
         'field': 'Volum',
-        'gte': '0',
-        'lte': '0.75',
-        'set': false
+        'gte':   '0',
+        'lte':   '0.75',
+        'set':   false
       }
     ]
   }
   // UI Helpers
   uiHelpers = {
-    'scrolled': false
+    'scrolled':  false,
+    'totalHits': '',
+    'docCount':  ''
   }
   // query object
   q = {
@@ -48,6 +45,7 @@ function getDefaultData() {
     'searchresults':  [],
     'categories': []
   }
+  queryinput = ''
   // variables returned to vm
   return {
     config,
@@ -62,9 +60,6 @@ function getDefaultData() {
 Vue.use(VueSync)
 locationSync = VueSync.locationStrategy()
 
-// Axios setup
-Vue.prototype.$http = axios
-
 // Vue instance
 var vm = new Vue({
   el: '#app',
@@ -74,11 +69,13 @@ var vm = new Vue({
   },
   methods: {
     // Start with data object from scratch: getDefaultData
-    resetDataBut: function() {
-      Object.assign(this.$data, getDefaultData())
+    resetDataBut(queryinput) {
+      var def = getDefaultData()
+      def[queryinput] = this[queryinput]
+      Object.assign(this.$data, def)
     },
     // Take user input and send to searcher
-    searchOn: function() {
+    searchOn() {
       // Trim query input
       var queryinput = this.queryinput
       this.resetDataBut(queryinput)
@@ -95,7 +92,7 @@ var vm = new Vue({
       this.searcher(q)
     },
     // searcher: Actually querying norch
-    searcher: function(q) {
+    searcher(q) {
       // JSON stringify q object
       Vue.set(vm, 'q', q)
       q = JSON.stringify(q)
@@ -105,7 +102,7 @@ var vm = new Vue({
       querySearchEndpoint(config.url + config.endpoint.search + q, 'searchResult')
     },
     // Endless scroll: Adding more results when at bottom of page
-    endlessScroll: function() {
+    endlessScroll() {
       this.uiHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
@@ -115,7 +112,7 @@ var vm = new Vue({
       }
     }
   },
-  mounted: function() {
+  mounted() {
     // Add event listener for scrolling
     window.addEventListener('scroll', this.endlessScroll)
     console.dir(JSON.stringify(this.q))
@@ -132,13 +129,11 @@ var vm = new Vue({
    /search
    /totalHits */
 
-function querySearchEndpoint(queryURL, responseType) {
-  // GET request
+function querySearchEndpoint(queryURL, queryType) {
   axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
-        // use result in callback...
-        processStream(event.target.result, responseType)
+        processStream(event.target.result, queryType)
       })
     })
     .catch(function (error) {
@@ -148,13 +143,26 @@ function querySearchEndpoint(queryURL, responseType) {
     })
 }
 
+function queryDocCountEndpoint(queryURL, queryType) {
+  axios.get(queryURL, {responseType: 'text'})
+    .then(function(response) {
+      setData(response.data, queryType)
+    })
+    .catch(function (error) {
+      // handle error
+      console.log('Some error in axios GET request')
+      console.log(error)
+    })
+}
+
+
 /* Helper functions for processing the response
    a: JSON object or stream (of JSON objects)
    b: Functions for setting the data in the data model */
 
 
 // Process streams
-function processStream(response, responseType) {
+function processStream(response, queryType) {
   // Regex to extract objects from stream and push to array
   const regex = /{.*}/g;
   let items
@@ -169,7 +177,7 @@ function processStream(response, responseType) {
       resultsetParsed.push(JSON.parse(match))
     })
   }
-  setData(resultsetParsed, responseType)
+  setData(resultsetParsed, queryType)
 }
 
 // reading blob as text string
@@ -180,12 +188,15 @@ function readBlob(blob, onLoadCallback){
 }
 
 // Switch for selecting correct data model setter
-function setData(resultsetParsed, responseType) {
-  switch (responseType) {
+function setData(resultsetParsed, queryType) {
+  switch (queryType) {
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
       break
+    case 'docCount':
+      Vue.set(vm.uiHelpers, 'docCount', resultsetParsed)
+      break
     default:
-      console.log('Error: Wrong switch variable name. Switch ' + responseType + ' don\'t exist')
+      console.log('Error: Wrong switch variable name. Switch ' + queryType + ' don\'t exist')
   }
 }
