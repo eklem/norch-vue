@@ -46,7 +46,7 @@ function getDefaultData() {
   // results back from norch
   results = {
     'searchresults': [],
-    'categories':    ''
+    'categories':    []
   }
   queryinput = ''
   // variables returned to vm
@@ -227,10 +227,11 @@ function processStream(response, queryType, fieldName) {
 function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
     case 'categorize':
-      //this.results.categories.push(resultsetParsed)
-      //Vue.set(vm.results, 'categories', resultsetParsed)
-      console.log(fieldName['field'])
-      console.log(JSON.stringify(resultsetParsed))
+      var category = fieldName['field']
+      var categoryObj = {}
+      categoryObj[category] = resultsetParsed
+      this.results.categories.push(categoryObj)
+      console.log(category)
       console.log(JSON.stringify(this.results.categories))
       break
     case 'searchResult':
