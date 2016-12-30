@@ -13,17 +13,16 @@
 
 
 <div id="app" class="wrapper" v-on:scroll="endlessScroll">
-  
   <!-- ### Search box ### -->
   <label class="textfield">
     <input type="text" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" /><button v-on:click="searchOn">search</button>
     <span class="textfield__label">search input</span>
   </label>
-
+  
   <!-- ### Search results ### -->
-  <div id="results" v-if="results.searchresults">
+  <div id="resultsSearchResults" v-if="uiHelpers.totalHits > 0">
     <div class="result-info">
-      {{ q.pageSize }} of ?? hits for query "{{ queryinput }}" filtered on
+      {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}" of {{ uiHelpers.docCount }} documents in index
     </div>
     <div class="result-item" v-for="items in results.searchresults">
       <h3>{{ items.document.Varenavn }}</h3>
@@ -32,11 +31,13 @@
   </div>
 
   <!-- ### JSON ### -->
-  <div id="json" v-if="results.searchresult">
+  <div id="json" v-if="results.searchresults">
     <h3>config</h3>
     <pre>{{ config }}</pre>
-    <h3>JSON</h3>
-    <pre>{{ results }}</pre>
+    <h3>categories</h3>
+    <pre>{{ results.categories }}</pre>
+    <h3>searchresults</h3>
+    <pre>{{ results.searchresults }}</pre>
   </div>
 </div>
 

@@ -12,8 +12,8 @@ function getDefaultData() {
       'totalHits':  'totalHits?q='
     },
     'categories': [
-      'Varetype',
-      'Land'
+      {'field': 'Varetype'},
+      {'field': 'Land'}
     ],
     'buckets': [
       {
@@ -32,18 +32,21 @@ function getDefaultData() {
   }
   // UI Helpers
   uiHelpers = {
-    'scrolled':  false,
-    'totalHits': '',
-    'docCount':  ''
+    'pageSizeIncrease': 10,
+    'filtered':         false,
+    'scrolled':         false,
+    'totalHits':        '',
+    'docCount':         ''
   }
   // query object
   q = {
-    'pageSize': 10
+    'pageSize': 10,
+    'category': ''
   }
   // results back from norch
   results = {
-    'searchresults':  [],
-    'categories': []
+    'searchresults': [],
+    'categories':    ''
   }
   queryinput = ''
   // variables returned to vm
@@ -60,7 +63,14 @@ function getDefaultData() {
 Vue.use(VueSync)
 locationSync = VueSync.locationStrategy()
 
-// Vue instance
+/* Vue instance, defining the following methods:
+   A: resetDataBut (to reset all data but queryinput) 
+   B: searchOn: Transform user queryinput, create query object 'q', set it to data model and send to 'searcher'-method
+   C: filterOn: Takes user filterinput, create a query object 'q', set it to data model and send to 'searcher'-method
+   D: searcher: Takes q from various methods and query the different norch endpoints
+   E: endlessScroll: increases 'pageSize' with 'pageSizeIncrease' and calls 'searcher' with new 'q'
+   F: (not a method, but when page onLoad) mounted() window scroll event to endlessScroll method
+   */
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
@@ -68,13 +78,13 @@ var vm = new Vue({
     q: locationSync('q')
   },
   methods: {
-    // Start with data object from scratch: getDefaultData
+    // A: resetDataBut - Start with data object from scratch: getDefaultData
     resetDataBut(queryinput) {
       var def = getDefaultData()
       def[queryinput] = this[queryinput]
       Object.assign(this.$data, def)
     },
-    // Take user input and send to searcher
+    // B: SearchOn - Take user input and send to searcher
     searchOn() {
       // Trim query input
       var queryinput = this.queryinput
@@ -82,7 +92,6 @@ var vm = new Vue({
       Vue.set(vm, 'queryinput', queryinput)
       var queryinput = queryinput.trim().toLowerCase()
       var queryinput = queryinput.split(" ")
-      // Get q from data function
       var q = this.q
       console.log('queryinput: ' + queryinput)
       // Merge queryinput into query
@@ -91,27 +100,39 @@ var vm = new Vue({
       console.log('Query in searchOn method: ' + JSON.stringify(this.q))
       this.searcher(q)
     },
-    // searcher: Actually querying norch
-    searcher(q) {
-      // JSON stringify q object
-      Vue.set(vm, 'q', q)
-      q = JSON.stringify(q)
-      // URI encode q object
-      q = encodeURIComponent(q)
-      var config = this.config
-      querySearchEndpoint(config.url + config.endpoint.search + q, 'searchResult')
+    // C: filterOn - Take user input on buckets or categories, transform and send to 'searcher' method
+    filterOn() {
+      console.log('This is the filterOn method')
     },
-    // Endless scroll: Adding more results when at bottom of page
+    // D: searcher - Actually querying norch
+    searcher(q) {
+      // Check if category configured and loop querying
+      if (this.config.categories.length > 0) {
+        for (let category of this.config.categories) {
+          console.log('Category: ' + JSON.stringify(category))
+          var qCat = q
+          qCat['category'] = category
+          qCat = encodeURIComponent(JSON.stringify(qCat))
+          queryFilterStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
+        }
+      }
+      q = encodeURIComponent(JSON.stringify(q))
+      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
+      queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
+      queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
+    },
+    // E: Endless scroll - Adding more results when at bottom of page
     endlessScroll() {
       this.uiHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
         var q = this.q
-        q['pageSize'] += 10
+        q['pageSize'] += this.uiHelpers.pageSizeIncrease
         this.searcher(q)
       }
     }
   },
+  // F: connects window scroll event and connects to endlessScroll
   mounted() {
     // Add event listener for scrolling
     window.addEventListener('scroll', this.endlessScroll)
@@ -120,16 +141,14 @@ var vm = new Vue({
 })
 
 
-/* Helper functions for querying norch endpoints
-   /docCount
-   /buckets
-   /categorize
-   /get
-   /matcher
-   /search
-   /totalHits */
+/* Helper functions for querying norch endpoints:
+   A: Simple stream endpoints: /search and /matcher
+   B: Filter stream endpoints: /buckets and /categorize
+   C: JSON object endpoints: /get, /totalHits and /docCount
+   */
 
-function querySearchEndpoint(queryURL, queryType) {
+// A: Simple stream endpoint querying
+function queryStreamEndpoint(queryURL, queryType) {
   axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
@@ -137,32 +156,55 @@ function querySearchEndpoint(queryURL, queryType) {
       })
     })
     .catch(function (error) {
-      // handle error
-      console.log('Some error in axios GET request')
+      console.log(queryType + ': Some error in axios GET request')
       console.log(error)
     })
 }
 
-function queryDocCountEndpoint(queryURL, queryType) {
+// B: Filter stream endpoint querying
+function queryFilterStreamEndpoint(queryURL, queryType, fieldName) {
+  axios.get(queryURL, {responseType: 'blob'})
+    .then(function(response) {
+      readBlob(response.data, function(event) {
+        processStream(event.target.result, queryType, fieldName)
+      })
+    })
+    .catch(function (error) {
+      console.log(queryType + ': Some error in axios GET request')
+      console.log(error)
+    })
+}
+
+// C: JSON object endpoint querying
+function queryObjectEndpoint(queryURL, queryType) {
   axios.get(queryURL, {responseType: 'text'})
     .then(function(response) {
+      console.log(response.data)
       setData(response.data, queryType)
     })
     .catch(function (error) {
-      // handle error
-      console.log('Some error in axios GET request')
+      console.log(queryType + ': Some error in axios GET request')
       console.log(error)
     })
 }
 
 
-/* Helper functions for processing the response
-   a: JSON object or stream (of JSON objects)
-   b: Functions for setting the data in the data model */
+/* Helper functions for processing the response and other small tasks
+   A: Read blobs
+   B: Process streams (of JSON objects to arrays of JSON objects)
+   C: JSONstringify and URLencode q object
+   D: Switch for setting the data in the data model */
 
 
-// Process streams
-function processStream(response, queryType) {
+// A: readBlob - Read blobs as text string
+function readBlob(blob, onLoadCallback){
+    var reader = new FileReader();
+    reader.onload = onLoadCallback;
+    reader.readAsText(blob);
+}
+
+// B: processStream - Process streams of JSON objects into arrays of JSON objects
+function processStream(response, queryType, fieldName) {
   // Regex to extract objects from stream and push to array
   const regex = /{.*}/g;
   let items
@@ -173,28 +215,32 @@ function processStream(response, queryType) {
       regex.lastIndex++;
     }
     items.forEach((match) => {
-      console.log(`Found match: ${match}`);
+      //console.log(`Found match: ${match}`);
       resultsetParsed.push(JSON.parse(match))
     })
   }
-  setData(resultsetParsed, queryType)
+  setData(resultsetParsed, queryType, fieldName)
 }
 
-// reading blob as text string
-function readBlob(blob, onLoadCallback){
-    var reader = new FileReader();
-    reader.onload = onLoadCallback;
-    reader.readAsText(blob);
-}
 
-// Switch for selecting correct data model setter
-function setData(resultsetParsed, queryType) {
+// D: setData - Switch for setting data in the data model
+function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
+    case 'categorize':
+      //this.results.categories.push(resultsetParsed)
+      //Vue.set(vm.results, 'categories', resultsetParsed)
+      console.log(fieldName['field'])
+      console.log(JSON.stringify(resultsetParsed))
+      console.log(JSON.stringify(this.results.categories))
+      break
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
       break
     case 'docCount':
       Vue.set(vm.uiHelpers, 'docCount', resultsetParsed)
+      break
+    case 'totalHits':
+      Vue.set(vm.uiHelpers, 'totalHits', resultsetParsed.totalHits)
       break
     default:
       console.log('Error: Wrong switch variable name. Switch ' + queryType + ' don\'t exist')
