@@ -7,6 +7,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.1/vue.js"></script>
     <script src="https://rawgit.com/buhrmi/vue-sync/master/index.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+      button {margin:0 5px 5px 0;}
+    </style>
     <title>test</title>
   </head>
 <body>
@@ -20,12 +23,21 @@
   </label>
   
   <!-- ### Search results ### -->
+  <div id="filters">
+    <div v-for="categoryObj in results.categories">
+      <div v-for="(categoryValue, categoryName, index) in categoryObj">
+        <h3>{{ categoryName }}</h3>
+        <button class="btn--secondary" v-for="filter in categoryValue">{{ filter.key }} <span class="disabled">{{ filter.value }}</button>
+      </div>
+    </div>
+  </div>
+
   <div id="resultsSearchResults" v-if="uiHelpers.totalHits > 0">
     <div class="result-info">
       {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}" of {{ uiHelpers.docCount }} documents in index
     </div>
     <div class="result-item" v-for="items in results.searchresults">
-      <h3>{{ items.document.Varenavn }}</h3>
+      <h1>{{ items.document.Varenavn }}</h1>
       <pre>{{ items.document }}</pre>
     </div>
   </div>
