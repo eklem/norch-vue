@@ -106,14 +106,16 @@ var vm = new Vue({
     },
     // D: searcher - Actually querying norch
     searcher(q) {
-      // Check if category configured and loop querying
+      // Check if category configured and loop query categorize endpoint
       if (this.config.categories.length > 0) {
-        for (let category of this.config.categories) {
+        console.log('filter in searcher: ' + this.config.categories.length)
+        for (var i = 0; i < this.config.categories.length; i++) {
+          var category = this.config.categories[i]
           console.log('Category: ' + JSON.stringify(category))
           var qCat = q
           qCat['category'] = category
           qCat = encodeURIComponent(JSON.stringify(qCat))
-          queryFilterStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
+          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category, i)
         }
       }
       q = encodeURIComponent(JSON.stringify(q))
@@ -142,17 +144,16 @@ var vm = new Vue({
 
 
 /* Helper functions for querying norch endpoints:
-   A: Simple stream endpoints: /search and /matcher
-   B: Filter stream endpoints: /buckets and /categorize
-   C: JSON object endpoints: /get, /totalHits and /docCount
+   A: Simple stream endpoints: /search, /matcher, /buckets and /categorize
+   B: JSON object endpoints: /get, /totalHits and /docCount
    */
 
-// A: Simple stream endpoint querying
-function queryStreamEndpoint(queryURL, queryType) {
+// A: stream endpoint querying
+function queryStreamEndpoint(queryURL, queryType, fieldName, index) {
   axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
-        processStream(event.target.result, queryType)
+        processStream(event.target.result, queryType, fieldName, index)
       })
     })
     .catch(function (error) {
@@ -161,21 +162,7 @@ function queryStreamEndpoint(queryURL, queryType) {
     })
 }
 
-// B: Filter stream endpoint querying
-function queryFilterStreamEndpoint(queryURL, queryType, fieldName) {
-  axios.get(queryURL, {responseType: 'blob'})
-    .then(function(response) {
-      readBlob(response.data, function(event) {
-        processStream(event.target.result, queryType, fieldName)
-      })
-    })
-    .catch(function (error) {
-      console.log(queryType + ': Some error in axios GET request')
-      console.log(error)
-    })
-}
-
-// C: JSON object endpoint querying
+// B: JSON object endpoint querying
 function queryObjectEndpoint(queryURL, queryType) {
   axios.get(queryURL, {responseType: 'text'})
     .then(function(response) {
@@ -192,8 +179,7 @@ function queryObjectEndpoint(queryURL, queryType) {
 /* Helper functions for processing the response and other small tasks
    A: Read blobs
    B: Process streams (of JSON objects to arrays of JSON objects)
-   C: JSONstringify and URLencode q object
-   D: Switch for setting the data in the data model */
+   C: JSONstringify and URLencode q object */
 
 
 // A: readBlob - Read blobs as text string
@@ -204,7 +190,7 @@ function readBlob(blob, onLoadCallback){
 }
 
 // B: processStream - Process streams of JSON objects into arrays of JSON objects
-function processStream(response, queryType, fieldName) {
+function processStream(response, queryType, fieldName, index) {
   // Regex to extract objects from stream and push to array
   const regex = /{.*}/g;
   let items
@@ -219,30 +205,18 @@ function processStream(response, queryType, fieldName) {
       resultsetParsed.push(JSON.parse(match))
     })
   }
-  setData(resultsetParsed, queryType, fieldName)
+  setData(resultsetParsed, queryType, fieldName, index)
 }
 
 
-// D: setData - Switch for setting data in the data model
-function setData(resultsetParsed, queryType, fieldName) {
+/* setData - Switch for setting data in the data model */
+function setData(resultsetParsed, queryType, fieldName, index) {
   switch (queryType) {
     case 'categorize':
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
-      if (this.results.categories.length === 0) {
-        this.results.categories.push(categoryObj)
-      }
-      else {
-        for (categoryStored in this.results.categories) {
-          if (this.results.categories[categoryStored] === category) {
-            this.results.categories.splice(categoryStored, 1, categoryObj)
-          }
-          else {
-            this.results.categories.push(categoryObj)
-          }
-        }
-      }
+      Vue.set(vm.results.categories, index, categoryObj)
       break
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
