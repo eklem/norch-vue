@@ -23,19 +23,24 @@
   </label>
   
   <!-- ### Search results ### -->
-  <div id="filters">
-    <div v-for="categoryObj in results.categories">
-      <div v-for="(categoryValue, categoryName, index) in categoryObj">
-        <h3>{{ categoryName }}</h3>
-        <button class="btn--secondary" v-for="filter in categoryValue">{{ filter.key }} <span class="disabled">{{ filter.value }}</button>
-      </div>
-    </div>
-  </div>
 
   <div id="resultsSearchResults" v-if="uiHelpers.totalHits > 0">
+    <!-- ## Results info ## -->
     <div class="result-info">
       {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}" of {{ uiHelpers.docCount }} documents in index
     </div>
+    
+    <!-- ## Categories ## -->
+    <div id="filters">
+      <div v-for="categoryObj in results.categories">
+        <div v-for="(categoryValue, categoryName, index) in categoryObj">
+          <h3>{{ categoryName }}</h3>
+          <button class="btn--secondary" v-for="filter in categoryValue">{{ filter.key }} <span class="disabled">{{ filter.value }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search result items -->
     <div class="result-item" v-for="items in results.searchresults">
       <h1>{{ items.document.Varenavn }}</h1>
       <pre>{{ items.document }}</pre>

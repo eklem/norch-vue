@@ -60,8 +60,8 @@ function getDefaultData() {
 }
 
 // URL sync setup
-Vue.use(VueSync)
-locationSync = VueSync.locationStrategy()
+//Vue.use(VueSync)
+//locationSync = VueSync.locationStrategy()
 
 /* Vue instance, defining the following methods:
    A: resetDataBut (to reset all data but queryinput) 
@@ -74,9 +74,9 @@ locationSync = VueSync.locationStrategy()
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
-  sync: {
-    q: locationSync('q')
-  },
+  //sync: {
+  //  q: locationSync('q')
+  //},
   methods: {
     // A: resetDataBut - Start with data object from scratch: getDefaultData
     resetDataBut(queryinput) {
@@ -210,7 +210,7 @@ function processStream(response, queryType, fieldName) {
   let items
   var resultsetParsed = []
   while ((items = regex.exec(response)) !== null) {
-    // This is necessary to avoid infinite loops with zero-width matches
+    // To avoid infinite loops with zero-width matches
     if (items.index === regex.lastIndex) {
       regex.lastIndex++;
     }
@@ -230,9 +230,19 @@ function setData(resultsetParsed, queryType, fieldName) {
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
-      this.results.categories.push(categoryObj)
-      console.log(category)
-      console.log(JSON.stringify(this.results.categories))
+      if (this.results.categories.length === 0) {
+        this.results.categories.push(categoryObj)
+      }
+      else {
+        for (categoryStored in this.results.categories) {
+          if (this.results.categories[categoryStored] === category) {
+            this.results.categories.splice(categoryStored, 1, categoryObj)
+          }
+          else {
+            this.results.categories.push(categoryObj)
+          }
+        }
+      }
       break
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
