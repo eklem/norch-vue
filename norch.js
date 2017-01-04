@@ -115,7 +115,7 @@ var vm = new Vue({
           var qCat = q
           qCat['category'] = category
           qCat = encodeURIComponent(JSON.stringify(qCat))
-          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category, i)
+          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
         }
       }
       q = encodeURIComponent(JSON.stringify(q))
@@ -149,11 +149,11 @@ var vm = new Vue({
    */
 
 // A: stream endpoint querying
-function queryStreamEndpoint(queryURL, queryType, fieldName, index) {
+function queryStreamEndpoint(queryURL, queryType, fieldName) {
   axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
-        processStream(event.target.result, queryType, fieldName, index)
+        processStream(event.target.result, queryType, fieldName)
       })
     })
     .catch(function (error) {
@@ -190,7 +190,7 @@ function readBlob(blob, onLoadCallback){
 }
 
 // B: processStream - Process streams of JSON objects into arrays of JSON objects
-function processStream(response, queryType, fieldName, index) {
+function processStream(response, queryType, fieldName) {
   // Regex to extract objects from stream and push to array
   const regex = /{.*}/g;
   let items
@@ -205,18 +205,30 @@ function processStream(response, queryType, fieldName, index) {
       resultsetParsed.push(JSON.parse(match))
     })
   }
-  setData(resultsetParsed, queryType, fieldName, index)
+  setData(resultsetParsed, queryType, fieldName)
 }
 
 
 /* setData - Switch for setting data in the data model */
-function setData(resultsetParsed, queryType, fieldName, index) {
+function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
     case 'categorize':
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
-      Vue.set(vm.results.categories, index, categoryObj)
+      // Check if categories-array is empty
+      if (this.results.categories.length === 0) {
+        this.results.categories.push(categoryObj)
+      }
+      var index = this.results.categories.map(function(o) { return Object.keys(o).indexOf(category)})
+      // Not sure if needed, but preventing duplicate categories
+      if (index >= 0) {
+        Vue.set(vm.results.categories, index, categoryObj)
+      }
+      // Pushing categoryObj to categories
+      if (index < 0) {
+        this.results.categories.push(categoryObj)
+      }
       break
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
