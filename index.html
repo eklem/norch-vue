@@ -27,7 +27,9 @@
   <div id="resultsSearchResults" v-if="uiHelpers.totalHits > 0">
     <!-- ## Results info ## -->
     <div class="result-info">
-      {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}" of {{ uiHelpers.docCount }} documents in index
+      {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}", filtered on
+      <button v-for="filteredOn in uiHelpers.filtered.categories">{{ filteredOn.category }} - {{ filteredOn.filter }}</button>
+      of {{ uiHelpers.docCount }} documents in index
     </div>
     
     <!-- ## Categories ## -->

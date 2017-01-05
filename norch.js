@@ -122,6 +122,10 @@ var vm = new Vue({
         console.log('key ' + category + ' doesn\'t exists in query: SETTING')
         Vue.set(vm.q.query.AND, [category], [filterName])
       }
+      var filteredObj = {category: category, filter: filterName}
+      console.log(JSON.stringify(filteredObj))
+      console.log(vm.uiHelpers.filtered.categories)
+      vm.uiHelpers.filtered.categories.push(filteredObj)
       this.searcher(q)
     },
     // D: filterOff - Remove filter that is now filtered on (added to AND), transform and send to 'searcher' method
