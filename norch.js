@@ -13,6 +13,8 @@ function getDefaultData() {
     },
     'categories': [
       {'field': 'Varetype'},
+      {'field': 'Pris'},
+      {'field': 'Volum'},
       {'field': 'Land'}
     ],
     'buckets': [
@@ -216,17 +218,23 @@ function setData(resultsetParsed, queryType, fieldName) {
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
-      // Check if categories-array is empty
-      if (this.results.categories.length === 0) {
-        this.results.categories.push(categoryObj)
+      // Setting index to -1 and changing if category key is found in this.results.categories array
+      var index = -1
+      for (var i=0; i<this.results.categories.length; i++) {
+        if (this.results.categories[i].hasOwnProperty(category)) {
+          index = i
+          console.log('We have a winner. Index is ' + i + ' for category ' + category)
+          break
+        }
       }
-      var index = this.results.categories.map(function(o) { return Object.keys(o).indexOf(category)})
-      // Not sure if needed, but preventing duplicate categories
-      if (index >= 0) {
+      // Preventing duplicate categories by overwriting/splicing
+      if (index > -1) {
+        console.log('Replacing categoryObj for index in array: ' + index)
         Vue.set(vm.results.categories, index, categoryObj)
-      }
-      // Pushing categoryObj to categories
-      if (index < 0) {
+      } 
+      // Pushing categoryObj to categories when category doesn't exist
+      else if (index === -1) {
+        console.log('Index is -1, pushing categoryObj for: ' + category)
         this.results.categories.push(categoryObj)
       }
       break
