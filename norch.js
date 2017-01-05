@@ -13,8 +13,6 @@ function getDefaultData() {
     },
     'categories': [
       {'field': 'Varetype'},
-      {'field': 'Pris'},
-      {'field': 'Volum'},
       {'field': 'Land'}
     ],
     'buckets': [
@@ -35,7 +33,10 @@ function getDefaultData() {
   // UI Helpers
   uiHelpers = {
     'pageSizeIncrease': 10,
-    'filtered':         false,
+    'filtered': {
+      'categories': [],
+      'buckets': []
+    },
     'scrolled':         false,
     'totalHits':        '',
     'docCount':         ''
@@ -103,8 +104,28 @@ var vm = new Vue({
       this.searcher(q)
     },
     // C: filterOn - Take user input on buckets or categories, transform and send to 'searcher' method
-    filterOn() {
-      console.log('This is the filterOn method')
+    filterOn(category, filterName, filterNumber) {
+      console.log('This is the filterOn method.\nCategory: ' + category + '\nFiltername: ' + filterName + '\nIndex: ' + filterNumber)
+      // get this.q and add key/value to query + this.uiHelpers.filtered.categories
+      var q = this.q
+      console.log(JSON.stringify(this.q.query.AND))
+      var filterObj = {}
+      filterObj[category] = [filterName]
+      console.log(JSON.stringify(filterObj))
+      // push query to category-array if it does exist
+      if (q.query.AND.hasOwnProperty(category)) {
+        console.log('key ' + category + ' exists in query: PUSHING')
+        vm.q.query.AND[category].push(filterName)
+      }
+      // Set key (category) + [filtername] for object if doesn't exist
+      if (!q.query.AND.hasOwnProperty(category)) {
+        console.log('key ' + category + ' doesn\'t exists in query: SETTING')
+        Vue.set(vm.q.query.AND, [category], [filterName])
+      }
+      this.searcher(q)
+    },
+    // D: filterOff - Remove filter that is now filtered on (added to AND), transform and send to 'searcher' method
+    filterOff(category, filterName) {
     },
     // D: searcher - Actually querying norch
     searcher(q) {

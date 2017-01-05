@@ -35,7 +35,7 @@
       <div v-for="categoryObj in results.categories">
         <div v-for="(categoryValue, categoryName, index) in categoryObj">
           <h3>{{ categoryName }}</h3>
-          <button class="btn--secondary" v-for="filter in categoryValue">{{ filter.key }} <span class="disabled">{{ filter.value }}</button>
+          <button v-on:click="filterOn(categoryName, filter.key, index)" class="btn--secondary" v-for="(filter, index) in categoryValue">index-{{ index }}: {{ filter.key }} <span class="disabled">{{ filter.value }}</button>
         </div>
       </div>
     </div>
