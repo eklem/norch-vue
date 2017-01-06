@@ -28,7 +28,7 @@
     <!-- ## Results info ## -->
     <div class="result-info">
       {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}", filtered on
-      <button v-for="filteredOn in uiHelpers.filtered.categories">{{ filteredOn.category }} - {{ filteredOn.filter }}</button>
+      <button v-on:click="filterOff(filteredOn.category, filteredOn.filter)" v-for="filteredOn in uiHelpers.filtered.categories" class="btn--secondary">{{ filteredOn.category }} - {{ filteredOn.filter }}</button>
       of {{ uiHelpers.docCount }} documents in index
     </div>
     

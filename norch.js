@@ -122,14 +122,42 @@ var vm = new Vue({
         console.log('key ' + category + ' doesn\'t exists in query: SETTING')
         Vue.set(vm.q.query.AND, [category], [filterName])
       }
+      // Add same info a littl different in uiHelpers.filtered.categories-array
       var filteredObj = {category: category, filter: filterName}
       console.log(JSON.stringify(filteredObj))
       console.log(vm.uiHelpers.filtered.categories)
       vm.uiHelpers.filtered.categories.push(filteredObj)
+      // Mark key/value filtered on as 'active: true'
+      /* Not yet sure how to fix this
+         Need to happen something when 'searcher'-method is called from filterOn
+         I guess I need a full array of {key:'activeKey',value:'activeValue'} to be passed all the way to setData(categorize)
+         Then the queryStreamEndpoint doesn't need to handle anything new, just pass along the array
+         The array passed along can be generated from uiHelpers.
+         Only thing left to figure out: How to handle filters within several categories. Array of arrays?
+      */
+      // Send q to searcher
       this.searcher(q)
     },
     // D: filterOff - Remove filter that is now filtered on (added to AND), transform and send to 'searcher' method
     filterOff(category, filterName) {
+      console.log('In filterOff, category ' + category + ' and filter ' + filterName)
+      var q = this.q
+      // remove filter from query
+      index = q.query.AND[category].indexOf(filterName)
+      q.query.AND[category].splice(index, 1)
+      console.log(JSON.stringify(q))
+      // remove from uiHelpers.filtered.categories
+      var searchTerm = {category: category, filter: filterName}
+      console.log('searchTerm: ' + JSON.stringify(searchTerm))
+      console.log('filtered:   ' + JSON.stringify(this.uiHelpers.filtered.categories[0]))
+      var index = -1
+      var data = this.uiHelpers.filtered.categories
+      keys = Object.keys(searchTerm),
+      index = data.findIndex(a =>
+        Object.keys(a).length === keys.length && keys.every(k => a[k] === searchTerm[k]))
+      console.log('index in filtered: ' + index)
+      this.uiHelpers.filtered.categories.splice(index, 1)
+      this.searcher(q)
     },
     // D: searcher - Actually querying norch
     searcher(q) {
@@ -273,6 +301,6 @@ function setData(resultsetParsed, queryType, fieldName) {
       Vue.set(vm.uiHelpers, 'totalHits', resultsetParsed.totalHits)
       break
     default:
-      console.log('Error: Wrong switch variable name. Switch ' + queryType + ' don\'t exist')
+      console.log('Error: Wrong switch variable name for setData. Switch ' + queryType + ' don\'t exist')
   }
 }
