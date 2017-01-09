@@ -16,6 +16,7 @@
 
 
 <div id="app" class="wrapper" v-on:scroll="endlessScroll">
+  <!-- <button v-on:click="availableFields()">Available Fields</button> -->
   <!-- ### Search box ### -->
   <label class="textfield">
     <input type="text" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" /><button v-on:click="searchOn">search</button>

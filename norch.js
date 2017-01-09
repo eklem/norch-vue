@@ -12,8 +12,7 @@ function getDefaultData() {
       'totalHits':  'totalHits?q='
     },
     'categories': [
-      {'field': 'Varetype'},
-      {'field': 'Land'}
+      {'field': 'Varetype'}
     ],
     'buckets': [
       {
@@ -44,6 +43,7 @@ function getDefaultData() {
   // query object
   q = {
     'pageSize': 10,
+    'offset': 0,
     'category': ''
   }
   // results back from norch
@@ -187,6 +187,9 @@ var vm = new Vue({
         q['pageSize'] += this.uiHelpers.pageSizeIncrease
         this.searcher(q)
       }
+    },
+    availableFields() {
+      queryStreamEndpoint(this.config.url + this.config.endpoint.availableFields, 'availableFields')
     }
   },
   // F: connects window scroll event and connects to endlessScroll
@@ -295,10 +298,14 @@ function setData(resultsetParsed, queryType, fieldName) {
       Vue.set(vm.results, 'searchresults', resultsetParsed)
       break
     case 'docCount':
-      Vue.set(vm.uiHelpers, 'docCount', resultsetParsed)
+      Vue.set(vm.uiHelpers, 'docCount', resultsetParsed.docCount)
       break
     case 'totalHits':
       Vue.set(vm.uiHelpers, 'totalHits', resultsetParsed.totalHits)
+      break
+    case 'availableFields':
+      console.log('availableFields: ' + JSON.stringify(resultsetParsed))
+      Vue.set(vm.uiHelpers, 'availableFields', resultsetParsed.availableFields)
       break
     default:
       console.log('Error: Wrong switch variable name for setData. Switch ' + queryType + ' don\'t exist')
