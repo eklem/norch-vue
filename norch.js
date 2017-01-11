@@ -12,7 +12,8 @@ function getDefaultData() {
       'totalHits':  'totalHits?q='
     },
     'categories': [
-      {'field': 'Varetype'}
+      {'field': 'Varetype'},
+      {'field': 'Land'}
     ],
     'buckets': [
       {
@@ -256,10 +257,10 @@ function processStream(response, queryType, fieldName) {
   while ((items = regex.exec(response)) !== null) {
     // To avoid infinite loops with zero-width matches
     if (items.index === regex.lastIndex) {
-      regex.lastIndex++;
+      regex.lastIndex++
     }
-    items.forEach((match) => {
-      //console.log(`Found match: ${match}`);
+    items.forEach((match, index) => {
+      console.log('Found match for ${index}: ${match}')
       resultsetParsed.push(JSON.parse(match))
     })
   }
@@ -271,6 +272,7 @@ function processStream(response, queryType, fieldName) {
 function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
     case 'categorize':
+      resultsetParsed.splice(0,1) // Removing *-filter
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
