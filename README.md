@@ -1,7 +1,7 @@
 # norch-vuejs-app
 Vue.js frontend to the search engine norch/search-index. An easy way to get started with norch and test your dataset without much coding. (Will be without any coding at a later point in time)
 
-## Test it right away on Codepen.io
+## Try it right away on Codepen.io
 [norch-vuejs-app@codepen.io](http://codepen.io/eklem/pen/YNyrMo)
 
 ## Install
@@ -48,7 +48,7 @@ norch.js starts with defining a data model. Part of it is the config-stuff. Poin
 I'm using Apache to deliver the page, but that's just me. User your preferred webserver to deliver index.html and norch.js and you're ready to play.
 
 ### Vue devtools
-Google Chrome is the preferred browser when developing because it has a working devtool for Vue: [Vue.js devtools](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
+Google Chrome is the preferred browser when developing because it has a working devtool for Vue: [Vue.js devtools](https://chrome.google.com/webstore/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd). It will among other things, show you what's happening to your data object(s) in your app.
 
 ## Plans
 * [x] First step is to make it talk to [`norch`](https://github.com/fergiemcdowall/norch) JSON API. Together with the [`search-index-indexer`](https://github.com/eklem/search-index-indexer) this will make people able to test their dataset without any coding.
