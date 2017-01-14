@@ -4,12 +4,13 @@ function getDefaultData() {
   config = {
     'url': 'http://oppskrift.klemespen.com:3030/',
     'endpoint': {
-      'search':     'search?q=',
-      'matcher':    'matcher?q=',
-      'categorize': 'categorize?q=',
-      'buckets':    'buckets?q=',
-      'docCount':   'docCount',
-      'totalHits':  'totalHits?q='
+      'search':          'search?q=',
+      'matcher':         'matcher?q=',
+      'categorize':      'categorize?q=',
+      'buckets':         'buckets?q=',
+      'docCount':        'docCount',
+      'totalHits':       'totalHits?q=',
+      'availableFields': 'availableFields'
     },
     'categories': [
       {'field': 'Varetype'},
@@ -44,7 +45,6 @@ function getDefaultData() {
   // query object
   q = {
     'pageSize': 10,
-    'offset': 0,
     'category': ''
   }
   // results back from norch
@@ -53,11 +53,13 @@ function getDefaultData() {
     'categories':    []
   }
   queryinput = ''
+  queryinputOld = ''
   // variables returned to vm
   return {
     config,
     uiHelpers,
     queryinput,
+    queryinputOld,
     q,
     results
   }
@@ -78,9 +80,6 @@ function getDefaultData() {
 var vm = new Vue({
   el: '#app',
   data: getDefaultData(),
-  //sync: {
-  //  q: locationSync('q')
-  //},
   methods: {
     // A: resetDataBut - Start with data object from scratch: getDefaultData
     resetDataBut(queryinput) {
@@ -90,19 +89,21 @@ var vm = new Vue({
     },
     // B: SearchOn - Take user input and send to searcher
     searchOn() {
-      // Trim query input
-      var queryinput = this.queryinput
-      this.resetDataBut(queryinput)
-      Vue.set(vm, 'queryinput', queryinput)
-      var queryinput = queryinput.trim().toLowerCase()
-      var queryinput = queryinput.split(" ")
-      var q = this.q
-      console.log('queryinput: ' + queryinput)
-      // Merge queryinput into query
-      q['query'] = {'AND':{'*':queryinput}}
-      // Send q to searcher
-      console.log('Query in searchOn method: ' + JSON.stringify(this.q))
-      this.searcher(q)
+      if (this.queryinput != this.queryinputOld) // Check if input has changed
+      {
+        var queryinput = this.queryinput
+        this.resetDataBut(queryinput)
+        Vue.set(vm, 'queryinput', queryinput)
+        Vue.set(vm, 'queryinputOld', queryinput)
+        var queryinput = (queryinput.trim().toLowerCase()).split(" ")
+        var q = this.q
+        console.log('queryinput: ' + queryinput)
+        // Merge queryinput into query
+        q['query'] = {'AND':{'*':queryinput}}
+        // Send q to searcher
+        console.log('Query in searchOn method: ' + JSON.stringify(this.q))
+        this.searcher(q)
+      }
     },
     // C: filterOn - Take user input on buckets or categories, transform and send to 'searcher' method
     filterOn(category, filterName, filterNumber) {
@@ -123,21 +124,12 @@ var vm = new Vue({
         console.log('key ' + category + ' doesn\'t exists in query: SETTING')
         Vue.set(vm.q.query.AND, [category], [filterName])
       }
-      // Add same info a littl different in uiHelpers.filtered.categories-array
+      // Add same info a little different in uiHelpers.filtered.categories-array
       var filteredObj = {category: category, filter: filterName}
       console.log(JSON.stringify(filteredObj))
       console.log(vm.uiHelpers.filtered.categories)
       vm.uiHelpers.filtered.categories.push(filteredObj)
-      // Mark key/value filtered on as 'active: true'
-      /* Not yet sure how to fix this
-         Need to happen something when 'searcher'-method is called from filterOn
-         I guess I need a full array of {key:'activeKey',value:'activeValue'} to be passed all the way to setData(categorize)
-         Then the queryStreamEndpoint doesn't need to handle anything new, just pass along the array
-         The array passed along can be generated from uiHelpers.
-         Only thing left to figure out: How to handle filters within several categories. Array of arrays?
-      */
-      // Send q to searcher
-      this.searcher(q)
+      this.searcher(q) // Send q to searcher
     },
     // D: filterOff - Remove filter that is now filtered on (added to AND), transform and send to 'searcher' method
     filterOff(category, filterName) {
@@ -197,7 +189,6 @@ var vm = new Vue({
   mounted() {
     // Add event listener for scrolling
     window.addEventListener('scroll', this.endlessScroll)
-    console.dir(JSON.stringify(this.q))
   }
 })
 
@@ -260,7 +251,7 @@ function processStream(response, queryType, fieldName) {
       regex.lastIndex++
     }
     items.forEach((match, index) => {
-      console.log('Found match for ${index}: ${match}')
+      //console.log('Found match for index ' + index + ': ' + match)
       resultsetParsed.push(JSON.parse(match))
     })
   }
