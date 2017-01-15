@@ -40,7 +40,8 @@ function getDefaultData() {
     },
     'scrolled':         false,
     'totalHits':        '',
-    'docCount':         ''
+    'docCount':         '',
+    'json': false
   }
   // query object
   q = {
@@ -183,6 +184,14 @@ var vm = new Vue({
     },
     availableFields() {
       queryStreamEndpoint(this.config.url + this.config.endpoint.availableFields, 'availableFields')
+    },
+    json() {
+      if (this.uiHelpers.json === false) {
+        Vue.set(vm.uiHelpers, 'json', true)
+      }
+      else {
+        Vue.set(vm.uiHelpers, 'json', false)
+      }
     }
   },
   // F: connects window scroll event and connects to endlessScroll

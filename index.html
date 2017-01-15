@@ -4,6 +4,8 @@
     <meta charset=utf-8>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="./norch-vuejs-app.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://rawgit.com/yuche/vue-strap/master/dist/vue-strap.js"></script>
@@ -14,9 +16,8 @@
 
 
 <div id="app" class="container" v-on:scroll="endlessScroll">
-  <!--<button v-on:click="availableFields()">Available Fields</button>-->
   <!-- ### Search box ### -->
-  <h1>Find a wine</h1>
+  <h1>Norch Vuejs app <span class="payoff">- For testing your index</span> <span class="btn-group" role="group" aria-label="..."><button class="btn button-md btn-default" v-on:click="availableFields()">Available fields</button><button class="btn button-md btn-default" v-on:click="json()">JSON</button></span></h1>
   <div class="input-group input-group-lg">
     <input id="searchbox"  type="text" class="form-control" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" placeholder="your query" />
     <span class="input-group-btn"><button class="btn button-lg btn-primary" v-on:click="searchOn">search</button></span>
@@ -24,32 +25,35 @@
   <!-- ### Search results ### -->
 
   <div id="resultsSearchResults" v-if="uiHelpers.totalHits > 0">
-    <!-- ## Results info ## -->
-    <div class="result-info">
-      {{ uiHelpers.totalHits }} hits for query "{{ queryinput }}", filtered on
-      <span  class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-default" v-on:click="filterOff(filteredOn.category, filteredOn.filter)" v-for="filteredOn in uiHelpers.filtered.categories">{{ filteredOn.category }} - {{ filteredOn.filter }}</button></span>
-      of {{ uiHelpers.docCount }} documents in index
-    </div>
     
     <!-- ## Categories ## -->
-    <div id="filters">
+    <div id="categories">
       <div v-for="categoryObj in results.categories">
-        <div v-for="(categoryValue, categoryName, index) in categoryObj">
+        <div class="filters" v-for="(categoryValue, categoryName, index) in categoryObj">
           <h3>{{ categoryName }}</h3>
-          <span  class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-info" v-if="!filter.filter" v-on:click="filterOn(categoryName, filter.key, index)" class="btn--secondary" v-for="(filter, index) in categoryValue">{{ filter.key }} <span class="disabled">{{ filter.value }}</button></span>
+          <span class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-primary" v-if="!filter.filter" v-on:click="filterOn(categoryName, filter.key, index)" class="btn--secondary" v-for="(filter, index) in categoryValue">{{ filter.key }} <span class="count">{{ filter.value }}</button></span>
         </div>
       </div>
     </div>
+    
+    <!-- ## Results info ## -->
+    <div class="result-info">
+      <h3>{{ uiHelpers.totalHits }} <span class="fillers">hits for</span> {{ queryinput }}
+        <span class="fillers">filtered on</span> <span  class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-default" v-on:click="filterOff(filteredOn.category, filteredOn.filter)" v-for="filteredOn in uiHelpers.filtered.categories">{{ filteredOn.category }} - {{ filteredOn.filter }}</button></span>
+        <span class="fillers">of</span> {{ uiHelpers.docCount }} <span class="fillers">documents in index</span></h3>
+    </div>
+
 
     <!-- Search result items -->
     <div class="result-item" v-for="items in results.searchresults">
-      <h2>{{ items.document.Varenavn }}</h2>
+      <h3>{{ items.document.Varenavn }}</h3>
       <pre>{{ items.document }}</pre>
     </div>
   </div>
 
   <!-- ### JSON ### -->
-  <div id="json" v-if="results.searchresults">
+  <div id="json" v-if="uiHelpers.json">
+    <button class="btn button-md btn-default" v-on:click="json()">X</button>
     <h3>config</h3>
     <pre>{{ config }}</pre>
     <h3>categories</h3>

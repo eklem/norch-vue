@@ -1,0 +1,65 @@
+body {
+  background-color:#ddd;
+}
+
+#app {
+  z-index:1;
+}
+
+/* header */
+.payoff {
+  color:#999;
+}
+
+
+/* filters */
+.filters .count {
+  color:#99c;
+}
+
+
+/* result info */
+.fillers {
+  font-size:0.8em;
+  color:#999;
+}
+
+
+/* results */
+.result-item {
+  padding:10px;
+  background-color:#fff;
+  margin:0 0 20px 0;
+}
+.result-item h3 {
+  margin-top:0;
+}
+.result-item pre {
+  border:none;
+  border-radius:0px;
+  background-color:#fff;
+  margin:0;
+  padding:0;
+}
+
+
+/* json */
+#json {
+  position:fixed;
+  background:rgba(0,0,0,0.7);
+  z-index:10;
+  overflow-y:scroll;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  padding:20px;
+}
+#json h3 {
+  color:#cfc;
+}
+#json pre {
+  background:rgba(0,102,0,0.5);
+  border:1px solid #000;
+  color:#ccffcc;
+}
