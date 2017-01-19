@@ -57,7 +57,7 @@ Google Chrome is the preferred browser when developing because it has a working 
 ### Test quey objects on norch
 When developing, it's good to check what norch supports and not, and what the response is. Test in you browser like this:
 ```URL
-http://[norch-url]:[port-number]/search?q=%7B%22pageSize%22%3A10%2C%22category%22%3A%7B%22field%22%3A%22Land%22%7D%2C%22query%22%3A%7B%22AND%22%3A%7B%22*%22%3A%5B%22*%22%5D%7D%7D%7D
+http://[norch-url]:[port-number]/search?q={"pageSize":10,"query":{"AND":{"*":["*"]}}}
 ``` 
 
 ## Plans
