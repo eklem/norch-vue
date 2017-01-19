@@ -20,6 +20,8 @@ mkdir norch-index
 mv data/ norch-index/
 ```
 
+For test-data we use the dataset [dataset-vinmonopolet](https://github.com/eklem/dataset-vinmonopolet).
+
 ### Starting norch
 ```console
 norch -p 3030 -l silly -i norch-index
