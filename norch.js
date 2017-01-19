@@ -171,6 +171,7 @@ var vm = new Vue({
       queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
       queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
       queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
+      this.availableFields()
     },
     // E: Endless scroll - Adding more results when at bottom of page
     endlessScroll() {
@@ -183,7 +184,7 @@ var vm = new Vue({
       }
     },
     availableFields() {
-      queryStreamEndpoint(this.config.url + this.config.endpoint.availableFields, 'availableFields')
+      queryObjectEndpoint(this.config.url + this.config.endpoint.availableFields, 'availableFields')
     },
     json() {
       if (this.uiHelpers.json === false) {
