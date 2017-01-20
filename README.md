@@ -30,7 +30,6 @@ For test-data we use the dataset [dataset-vinmonopolet](https://github.com/eklem
 ### Starting norch
 ```console
 norch -p 3030 -l silly -i norch-index
-norch -i [search-index-folder] -c http://[norch-vuejs-frontend]
 ```
 
 ### Configuring norch-vuejs-app
