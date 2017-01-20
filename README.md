@@ -1,6 +1,11 @@
 # norch-vuejs-app
 Vue.js frontend to the search engine [norch](https://github.com/fergiemcdowall/norch) / [search-index](https://github.com/fergiemcdowall/search-index). An easy way to get started with norch and test your dataset without much coding. (Will be without any coding at a later point in time)
 
+[![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
+[![NPM version][npm-version-image]][npm-url]
+[![NPM downloads][npm-downloads-image]][npm-url]
+[![MIT License][license-image]][license-url]
+
 ## Try it right away on Codepen.io
 [norch-vuejs-app@codepen.io](http://codepen.io/eklem/pen/YNyrMo)
 
@@ -25,7 +30,6 @@ For test-data we use the dataset [dataset-vinmonopolet](https://github.com/eklem
 ### Starting norch
 ```console
 norch -p 3030 -l silly -i norch-index
-norch -i [search-index-folder] -c http://[norch-vuejs-frontend]
 ```
 
 ### Configuring norch-vuejs-app
@@ -65,3 +69,11 @@ http://[norch-url]:[port-number]/search?q={"pageSize":10,"query":{"AND":{"*":["*
 ## Plans
 * [x] First step is to make it talk to [`norch`](https://github.com/fergiemcdowall/norch) JSON API. Together with the [`search-index-indexer`](https://github.com/eklem/search-index-indexer) this will make people able to test their dataset without any coding.
 * [ ] Second step is to make it run in the browser and be able to switch from using an external `norch` JSON API to an internal [`search-index`](https://github.com/fergiemcdowall/search-index) API after replicating the search index into local storage.
+
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[license-url]: LICENSE
+[npm-url]: https://npmjs.org/package/norch-vuejs-app
+[npm-version-image]: http://img.shields.io/npm/v/norch-vuejs-app.svg?style=flat-square
+[npm-downloads-image]: http://img.shields.io/npm/dm/norch-vuejs-app.svg?style=flat-square
+[gitter-url]: https://gitter.im/fergiemcdowall/search-index?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+[gitter-image]: https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square
