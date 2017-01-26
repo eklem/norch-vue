@@ -2,7 +2,7 @@
 function getDefaultData() {
   // Application configuration
   config = {
-    'url': 'http://oppskrift.klemespen.com:3030/',
+    'url': 'http://norch-vuejs.klemespen.com:3030/',
     'endpoint': {
       'search':          'search?q=',
       'matcher':         'matcher?q=',
