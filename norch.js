@@ -33,7 +33,7 @@ function getDefaultData() {
   }
   // UI Helpers
   uiHelpers = {
-    'pageSizeIncrease': 20,
+    'pageSizeIncrease': 10,
     'filtered': {
       'categories': [],
       'buckets': []
