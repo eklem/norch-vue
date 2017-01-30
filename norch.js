@@ -33,7 +33,7 @@ function getDefaultData() {
   }
   // UI Helpers
   uiHelpers = {
-    'pageSizeIncrease': 10,
+    'pageSizeIncrease': 20,
     'filtered': {
       'categories': [],
       'buckets': []
@@ -168,8 +168,8 @@ var vm = new Vue({
         }
       }
       q = encodeURIComponent(JSON.stringify(q))
-      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
       queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
+      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
       queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
       this.availableFields()
     },
