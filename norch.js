@@ -2,7 +2,7 @@
 function getDefaultData() {
   // Application configuration
   config = {
-    'url': 'http://norch-vuejs.klemespen.com:3030/',
+    'url': 'http://test.klemespen.com:3030/',
     'endpoint': {
       'search':          'search?q=',
       'matcher':         'matcher?q=',
@@ -13,8 +13,8 @@ function getDefaultData() {
       'availableFields': 'availableFields'
     },
     'categories': [
-      {'field': 'Varetype'},
-      {'field': 'Land'}
+      {'field': 'productType'},
+      {'field': 'mainCountry'}
     ],
     'buckets': [
       {
@@ -45,7 +45,7 @@ function getDefaultData() {
   }
   // query object
   q = {
-    'pageSize': 10,
+    'pageSize': 40,
     'category': ''
   }
   // results back from norch
@@ -273,6 +273,11 @@ function processStream(response, queryType, fieldName) {
 function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
     case 'categorize':
+      // Sorting resultsetParsed on highest to lowest value (from what's returned, which is alphabetically)
+      // Still need to fix the issue with sam
+      resultsetParsed.sort(function(a, b) {
+          return b.value - a.value;
+      })
       resultsetParsed.splice(0,1) // Removing *-filter
       var category = fieldName['field']
       var categoryObj = {}
@@ -290,7 +295,7 @@ function setData(resultsetParsed, queryType, fieldName) {
       if (index > -1) {
         console.log('Replacing categoryObj for index in array: ' + index)
         Vue.set(vm.results.categories, index, categoryObj)
-      } 
+      }
       // Pushing categoryObj to categories when category doesn't exist
       else if (index === -1) {
         console.log('Index is -1, pushing categoryObj for: ' + category)
