@@ -42,7 +42,11 @@ body {
   margin:0;
   padding:0;
 }
-
+.result-item img {
+  float:right;
+  width:100px;
+  clear:both;
+}
 
 /* json */
 #json {

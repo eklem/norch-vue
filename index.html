@@ -48,6 +48,7 @@
     <!-- Search result items -->
     <div class="result-item" v-for="items in results.searchresults">
       <h3>{{ items.document.name }}</h3>
+      <img v-bind:src="items.document.image">
       <pre>{{ items.document }}</pre>
     </div>
   </div>
