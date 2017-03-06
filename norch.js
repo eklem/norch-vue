@@ -274,7 +274,7 @@ function setData(resultsetParsed, queryType, fieldName) {
   switch (queryType) {
     case 'categorize':
       // Sorting resultsetParsed on highest to lowest value (from what's returned, which is alphabetically)
-      // Still need to fix the issue with sam
+      // Still need to fix the issue with same pageSize and offsett on /search, /matcher, /categorize and /buckets urls in data model
       resultsetParsed.sort(function(a, b) {
           return b.value - a.value;
       })
