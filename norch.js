@@ -45,8 +45,13 @@ function getDefaultData() {
   }
   // query object
   q = {
-    'pageSize': 40,
-    'category': ''
+    'search': {
+      'pageSize': 10,
+    },
+    'categorize': {
+      'pageSize': 75,
+      'category': ''
+    }
   }
   // results back from norch
   results = {
@@ -100,7 +105,7 @@ var vm = new Vue({
         var q = this.q
         console.log('queryinput: ' + queryinput)
         // Merge queryinput into query
-        q['query'] = {'AND':{'*':queryinput}}
+        q.search['query'] = q.categorize['query'] = {'AND':{'*':queryinput}}
         // Send q to searcher
         console.log('Query in searchOn method: ' + JSON.stringify(this.q))
         this.searcher(q)
@@ -111,34 +116,35 @@ var vm = new Vue({
       console.log('This is the filterOn method.\nCategory: ' + category + '\nFiltername: ' + filterName + '\nIndex: ' + filterNumber)
       // get this.q and add key/value to query + this.uiHelpers.filtered.categories
       var q = this.q
-      console.log(JSON.stringify(this.q.query.AND))
+      console.log(JSON.stringify(this.q.categorize.query.AND))
       var filterObj = {}
       filterObj[category] = [filterName]
       console.log(JSON.stringify(filterObj))
       // push query to category-array if it does exist
-      if (q.query.AND.hasOwnProperty(category)) {
+      if (q.categorize.query.AND.hasOwnProperty(category)) {
         console.log('key ' + category + ' exists in query: PUSHING')
-        vm.q.query.AND[category].push(filterName)
+        vm.q.categorize.query.AND[category].push(filterName)
       }
       // Set key (category) + [filtername] for object if doesn't exist
-      if (!q.query.AND.hasOwnProperty(category)) {
+      if (!q.categorize.query.AND.hasOwnProperty(category)) {
         console.log('key ' + category + ' doesn\'t exists in query: SETTING')
-        Vue.set(vm.q.query.AND, [category], [filterName])
+        Vue.set(vm.q.categorize.query.AND, [category], [filterName])
       }
       // Add same info a little different in uiHelpers.filtered.categories-array
       var filteredObj = {category: category, filter: filterName}
       console.log(JSON.stringify(filteredObj))
       console.log(vm.uiHelpers.filtered.categories)
       vm.uiHelpers.filtered.categories.push(filteredObj)
-      this.searcher(q) // Send q to searcher
+      this.searcher(q.cateogrize) // Send q to searcher
     },
     // D: filterOff - Remove filter that is now filtered on (added to AND), transform and send to 'searcher' method
     filterOff(category, filterName) {
       console.log('In filterOff, category ' + category + ' and filter ' + filterName)
       var q = this.q
       // remove filter from query
-      index = q.query.AND[category].indexOf(filterName)
-      q.query.AND[category].splice(index, 1)
+      index = q.search.query.AND[category].indexOf(filterName)
+      q.categorize.query.AND[category].splice(index, 1)
+      q.search.query.AND[category].splice(index, 1)
       console.log(JSON.stringify(q))
       // remove from uiHelpers.filtered.categories
       var searchTerm = {category: category, filter: filterName}
@@ -161,17 +167,16 @@ var vm = new Vue({
         for (var i = 0; i < this.config.categories.length; i++) {
           var category = this.config.categories[i]
           console.log('Category: ' + JSON.stringify(category))
-          var qCat = q
-          qCat['category'] = category
-          qCat = encodeURIComponent(JSON.stringify(qCat))
+          var q = this.q
+          q.categorize['category'] = category
+          qCat = encodeURIComponent(JSON.stringify(q.categorize))
           queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
         }
       }
-      q = encodeURIComponent(JSON.stringify(q))
+      q = encodeURIComponent(JSON.stringify(q.search))
       queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
       queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
       queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
-      this.availableFields()
     },
     // E: Endless scroll - Adding more results when at bottom of page
     endlessScroll() {
@@ -279,6 +284,9 @@ function setData(resultsetParsed, queryType, fieldName) {
           return b.value - a.value;
       })
       resultsetParsed.splice(0,1) // Removing *-filter
+      if (resultsetParsed.length > 10) {
+        resultsetParsed.splice(10) // Removing everything over 10 filters
+      }
       var category = fieldName['field']
       var categoryObj = {}
       categoryObj[category] = resultsetParsed
