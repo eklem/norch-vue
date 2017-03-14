@@ -97,18 +97,16 @@ var vm = new Vue({
     searchOn() {
       if (this.queryinput != this.queryinputOld) // Check if input has changed
       {
-        var queryinput = this.queryinput
-        this.resetDataBut(queryinput)
-        Vue.set(vm, 'queryinput', queryinput)
+        var queryinput = this.queryinput  // Get user input
+        this.resetDataBut(queryinput)  // Reset datamodel, except for queryinput
+        Vue.set(vm, 'queryinput', queryinput) // Set new queryinput to data model
         Vue.set(vm, 'queryinputOld', queryinput)
         var queryinput = (queryinput.trim().toLowerCase()).split(" ")
         var q = this.q
         console.log('queryinput: ' + queryinput)
-        // Merge queryinput into query
-        q.search['query'] = q.categorize['query'] = {'AND':{'*':queryinput}}
-        // Send q to searcher
+        q.search['query'] = q.categorize['query'] = {'AND':{'*':queryinput}} // Merge queryinput into query
         console.log('Query in searchOn method: ' + JSON.stringify(this.q))
-        this.searcher(q)
+        this.searcher(q) // Send q to searcher
       }
     },
     // C: filterOn - Take user input on buckets or categories, transform and send to 'searcher' method
@@ -183,7 +181,7 @@ var vm = new Vue({
       this.uiHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
-        var q = this.q
+        var q = this.q.search
         q['pageSize'] += this.uiHelpers.pageSizeIncrease
         this.searcher(q)
       }
