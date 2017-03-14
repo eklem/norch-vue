@@ -1,6 +1,6 @@
 {
   "name": "norch-vuejs-app",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Search frontend for Norch search engine, written in vue.js",
   "main": "index.html",
   "scripts": {
