@@ -207,6 +207,12 @@ var vm = new Vue({
   mounted() {
     // Add event listener for scrolling
     window.addEventListener('scroll', this.endlessScroll)
+    // Adding event listener for 'esc'-key when JSON window is displayed
+    window.addEventListener('keydown', (e) => {
+      if (e.keyCode == 27 && this.uiHelpers.json === true) {
+        this.json();
+      }
+    })
   }
 })
 

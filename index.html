@@ -52,10 +52,14 @@
   </div>
 
   <!-- ### JSON ### -->
-  <div id="json" v-if="uiHelpers.json">
+  <div id="json" v-if="uiHelpers.json" />
     <button class="btn button-md btn-default" v-on:click="json()">X</button>
     <h3>config</h3>
     <pre>{{ config }}</pre>
+    <h3>uiHelpers</h3>
+    <pre>{{ uiHelpers }}</pre>
+    <h3>q</h3>
+    <pre>{{ q }}</pre>
     <h3>categories</h3>
     <pre>{{ results.categories }}</pre>
     <h3>searchresults</h3>
