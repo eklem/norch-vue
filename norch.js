@@ -106,7 +106,7 @@ var vm = new Vue({
         var queryinput = (queryinput.trim().toLowerCase()).split(" ")
         var q = this.q
         console.log('queryinput: ' + queryinput)
-        q.search['query'] = q.categorize['query'] = {'AND':{'*':queryinput}} // Merge queryinput into query
+        q.search['query'] = q.categorize['query'] = {'AND':{'*':queryinput}} // Merge queryinput into queries
         console.log('Query in searchOn method: ' + JSON.stringify(this.q))
         this.searcher(q) // Send q to searcher
       }
@@ -171,6 +171,7 @@ var vm = new Vue({
           q.categorize['category'] = category
           qCat = encodeURIComponent(JSON.stringify(q.categorize))
           queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
+          q.categorize['category'] = '' // resetting to empty
         }
       }
       this.uiHelpers.waitingForResults = true // Displaying "waiting for results" overlay
