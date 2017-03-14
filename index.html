@@ -48,6 +48,7 @@
       <img v-bind:src="items.document.image">
       <pre>{{ items.document }}</pre>
     </div>
+    <div id="allHitsDisplayed" v-if="uiHelpers.allHitsDisplayed"><h2>All {{ uiHelpers.totalHits }} hits displayed.</h3></div>
   </div>
 
   <!-- ### JSON ### -->

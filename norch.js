@@ -33,16 +33,17 @@ function getDefaultData() {
   }
   // UI Helpers
   uiHelpers = {
-    'pageSizeIncrease': 10,
+    'pageSizeIncrease':  10,
     'filtered': {
-      'categories': [],
-      'buckets': []
+      'categories':      [],
+      'buckets':         []
     },
-    'scrolled':         false,
-    'totalHits':        '',
-    'docCount':         '',
-    'json': false,
-    'waitingForResults':false
+    'scrolled':          false,
+    'totalHits':         '',
+    'docCount':          '',
+    'json':              false,
+    'allHitsDisplayed':  false,
+    'waitingForResults': false
   }
   // query object
   q = {
@@ -183,9 +184,14 @@ var vm = new Vue({
       this.uiHelpers.scrolled = window.scrollY > 0
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         // you're at the bottom of the page
-        var q = this.q.search
-        q['pageSize'] += this.uiHelpers.pageSizeIncrease
-        this.searcher(q)
+        if (this.q.search.pageSize< uiHelpers.totalHits) {
+          var q = this.q.search
+          q['pageSize'] += this.uiHelpers.pageSizeIncrease
+          this.searcher(q)
+        }
+        if (this.q.search.pageSize >= uiHelpers.totalHits) {
+          this.uiHelpers.allHitsDisplayed = true
+        }
       }
     },
     json() {
