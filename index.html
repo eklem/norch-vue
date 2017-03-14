@@ -60,6 +60,7 @@
     <h3>searchresults</h3>
     <pre>{{ results.searchresults }}</pre>
   </div>
+  <div id="loading" v-if="uiHelpers.waitingForResults">... waiting for results ...</div>
 </div>
 
 <script src="./norch.js"></script>

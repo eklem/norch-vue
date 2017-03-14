@@ -41,7 +41,8 @@ function getDefaultData() {
     'scrolled':         false,
     'totalHits':        '',
     'docCount':         '',
-    'json': false
+    'json': false,
+    'waitingForResults':false
   }
   // query object
   q = {
@@ -76,7 +77,7 @@ function getDefaultData() {
 //locationSync = VueSync.locationStrategy()
 
 /* Vue instance, defining the following methods:
-   A: resetDataBut (to reset all data but queryinput) 
+   A: resetDataBut (to reset all data but queryinput)
    B: searchOn: Transform user queryinput, create query object 'q', set it to data model and send to 'searcher'-method
    C: filterOn: Takes user filterinput, create a query object 'q', set it to data model and send to 'searcher'-method
    D: searcher: Takes q from various methods and query the different norch endpoints
@@ -95,7 +96,7 @@ var vm = new Vue({
     },
     // B: SearchOn - Take user input and send to searcher
     searchOn() {
-      if (this.queryinput != this.queryinputOld) // Check if input has changed
+      if (this.queryinput != this.queryinputOld && this.queryinput.length != 0) // Check if input has changed
       {
         var queryinput = this.queryinput  // Get user input
         this.resetDataBut(queryinput)  // Reset datamodel, except for queryinput
@@ -171,6 +172,7 @@ var vm = new Vue({
           queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
         }
       }
+      this.uiHelpers.waitingForResults = true // Displaying "waiting for results" overlay
       q = encodeURIComponent(JSON.stringify(q.search))
       queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
       queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
@@ -185,9 +187,6 @@ var vm = new Vue({
         q['pageSize'] += this.uiHelpers.pageSizeIncrease
         this.searcher(q)
       }
-    },
-    availableFields() {
-      queryObjectEndpoint(this.config.url + this.config.endpoint.availableFields, 'availableFields')
     },
     json() {
       if (this.uiHelpers.json === false) {
@@ -310,6 +309,7 @@ function setData(resultsetParsed, queryType, fieldName) {
       break
     case 'searchResult':
       Vue.set(vm.results, 'searchresults', resultsetParsed)
+      Vue.set(vm.uiHelpers, 'waitingForResults', false) // Removing "waiting for results" overlay
       break
     case 'docCount':
       Vue.set(vm.uiHelpers, 'docCount', resultsetParsed.docCount)
