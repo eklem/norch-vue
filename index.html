@@ -18,7 +18,7 @@
   <!-- ### Search box ### -->
   <h1><a href="./">Norch Vuejs app</a> <span class="payoff">- Testing your search index</span></h1>
   <div class="input-group input-group-lg">
-    <input id="searchbox"  type="text" class="form-control" v-model="queryinput" v-on:keyup.enter="searchOn" placeholder="your query" autofocus/>
+    <input id="searchbox"  type="text" class="form-control" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" placeholder="your query" autofocus/>
     <span class="input-group-btn"><button class="btn button-lg btn-primary" v-on:click="searchOn">search</button><button class="btn button-lg btn-default" v-on:click="json()">JSON</button></span>
   </div>
   <!-- ### Search results ### -->

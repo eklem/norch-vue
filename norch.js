@@ -161,6 +161,9 @@ var vm = new Vue({
     },
     // D: searcher - Actually querying norch
     searcher(q) {
+      // Define cancel token for axios
+      var CancelToken = axios.CancelToken
+      var source = CancelToken.source()
       // Check if category configured and loop query categorize endpoint
       if (this.config.categories.length > 0) {
         console.log('filter in searcher: ' + this.config.categories.length)
@@ -170,15 +173,15 @@ var vm = new Vue({
           var q = this.q
           q.categorize['category'] = category
           qCat = encodeURIComponent(JSON.stringify(q.categorize))
-          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
+          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category, source.token)
           q.categorize['category'] = '' // resetting to empty
         }
       }
       this.uiHelpers.waitingForResults = true // Displaying "waiting for results" overlay
       q = encodeURIComponent(JSON.stringify(q.search))
-      queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
-      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
-      queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
+      queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult', source.token)
+      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits', source.token)
+      queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount', source.token)
     },
     // E: Endless scroll - Adding more results when at bottom of page
     endlessScroll() {
@@ -224,12 +227,17 @@ var vm = new Vue({
    */
 
 // A: stream endpoint querying
-function queryStreamEndpoint(queryURL, queryType, fieldName) {
-  axios.get(queryURL, {responseType: 'blob'})
+function queryStreamEndpoint(queryURL, queryType, fieldName, token) {
+  axios.get(queryURL, {responseType: 'blob', cancelToken: token})
     .then(function(response) {
       readBlob(response.data, function(event) {
         processStream(event.target.result, queryType, fieldName)
       })
+    })
+    .catch(function(thrown) {
+      if (axios.isCancel(thrown)) {
+        console.log('Request canceled: ', thrown.message);
+      }
     })
     .catch(function (error) {
       console.log(queryType + ': Some error in axios GET request')
@@ -238,11 +246,16 @@ function queryStreamEndpoint(queryURL, queryType, fieldName) {
 }
 
 // B: JSON object endpoint querying
-function queryObjectEndpoint(queryURL, queryType) {
-  axios.get(queryURL, {responseType: 'text'})
+function queryObjectEndpoint(queryURL, queryType, token) {
+  axios.get(queryURL, {responseType: 'text', cancelToken: token})
     .then(function(response) {
       console.log(response.data)
       setData(response.data, queryType)
+    })
+    .catch(function(thrown) {
+      if (axios.isCancel(thrown)) {
+        console.log('Request canceled: ', thrown.message);
+      }
     })
     .catch(function (error) {
       console.log(queryType + ': Some error in axios GET request')
