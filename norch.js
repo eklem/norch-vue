@@ -33,17 +33,19 @@ function getDefaultData() {
   }
   // UI Helpers
   uiHelpers = {
-    'pageSizeIncrease':  10,
+    'pageSizeIncrease':     10,
     'filtered': {
-      'categories':      [],
-      'buckets':         []
+      'categories':         [],
+      'buckets':            []
     },
-    'scrolled':          false,
-    'totalHits':         '',
-    'docCount':          '',
-    'json':              false,
-    'allHitsDisplayed':  false,
-    'waitingForResults': false
+    'scrolled':             false,
+    'totalHits':            '',
+    'docCount':             '',
+    'json':                 false,
+    'allHitsDisplayed':     false,
+    'waitingForResults':    false,
+    'source':               '',
+    'readyForCancellation': true
   }
   // query object
   q = {
@@ -97,7 +99,7 @@ var vm = new Vue({
     },
     // B: SearchOn - Take user input and send to searcher
     searchOn() {
-      if (this.queryinput != this.queryinputOld && this.queryinput.length != 0) // Check if input has changed
+      if (this.queryinput != this.queryinputOld && this.queryinput.length != 0) // Check if input has changed and contains something
       {
         var queryinput = this.queryinput  // Get user input
         this.resetDataBut(queryinput)  // Reset datamodel, except for queryinput
@@ -161,9 +163,6 @@ var vm = new Vue({
     },
     // D: searcher - Actually querying norch
     searcher(q) {
-      // Define cancel token for axios
-      var CancelToken = axios.CancelToken
-      var source = CancelToken.source()
       // Check if category configured and loop query categorize endpoint
       if (this.config.categories.length > 0) {
         console.log('filter in searcher: ' + this.config.categories.length)
@@ -173,15 +172,15 @@ var vm = new Vue({
           var q = this.q
           q.categorize['category'] = category
           qCat = encodeURIComponent(JSON.stringify(q.categorize))
-          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category, source.token)
+          queryStreamEndpoint(config.url + config.endpoint.categorize + qCat, 'categorize', category)
           q.categorize['category'] = '' // resetting to empty
         }
       }
       this.uiHelpers.waitingForResults = true // Displaying "waiting for results" overlay
       q = encodeURIComponent(JSON.stringify(q.search))
-      queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult', source.token)
-      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits', source.token)
-      queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount', source.token)
+      queryStreamEndpoint(this.config.url + this.config.endpoint.search + q, 'searchResult')
+      queryObjectEndpoint(this.config.url + this.config.endpoint.totalHits + q, 'totalHits')
+      queryObjectEndpoint(this.config.url + this.config.endpoint.docCount, 'docCount')
     },
     // E: Endless scroll - Adding more results when at bottom of page
     endlessScroll() {
@@ -227,17 +226,12 @@ var vm = new Vue({
    */
 
 // A: stream endpoint querying
-function queryStreamEndpoint(queryURL, queryType, fieldName, token) {
-  axios.get(queryURL, {responseType: 'blob', cancelToken: token})
+function queryStreamEndpoint(queryURL, queryType, fieldName) {
+  axios.get(queryURL, {responseType: 'blob'})
     .then(function(response) {
       readBlob(response.data, function(event) {
         processStream(event.target.result, queryType, fieldName)
       })
-    })
-    .catch(function(thrown) {
-      if (axios.isCancel(thrown)) {
-        console.log('Request canceled: ', thrown.message);
-      }
     })
     .catch(function (error) {
       console.log(queryType + ': Some error in axios GET request')
@@ -246,16 +240,11 @@ function queryStreamEndpoint(queryURL, queryType, fieldName, token) {
 }
 
 // B: JSON object endpoint querying
-function queryObjectEndpoint(queryURL, queryType, token) {
-  axios.get(queryURL, {responseType: 'text', cancelToken: token})
+function queryObjectEndpoint(queryURL, queryType) {
+  axios.get(queryURL, {responseType: 'text'})
     .then(function(response) {
-      console.log(response.data)
+      console.log(JSON.stringify(response.data))
       setData(response.data, queryType)
-    })
-    .catch(function(thrown) {
-      if (axios.isCancel(thrown)) {
-        console.log('Request canceled: ', thrown.message);
-      }
     })
     .catch(function (error) {
       console.log(queryType + ': Some error in axios GET request')
