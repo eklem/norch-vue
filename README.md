@@ -1,4 +1,4 @@
-# norch-vuejs-app
+# norch-vue
 Vue.js frontend to the search engine [norch](https://github.com/fergiemcdowall/norch) / [search-index](https://github.com/fergiemcdowall/search-index). An easy way to get started with norch and test your dataset without much coding. (Will be without any coding at a later point in time)
 
 [![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
@@ -32,7 +32,7 @@ For test-data we use the dataset [dataset-vinmonopolet](https://github.com/eklem
 norch -p 3030 -l silly -i norch-index
 ```
 
-### Configuring norch-vuejs-app
+### Configuring norch-vue
 norch.js starts with defining a data model. Part of it is the config-stuff. Point it to the `url` of your norch instance, and setup cateories (fields you want to filter on).
 ```javascript
 // Application configuration
