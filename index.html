@@ -3,69 +3,16 @@
   <head>
     <meta charset=utf-8>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="./norch.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <title>Norch Vuejs app</title>
   </head>
 <body>
 
 
-<div id="app" class="container" v-on:scroll="endlessScroll">
-  <a href="https://github.com/eklem/norch-vuejs-app" target="_top"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
-  <!-- ### Search box ### -->
-  <h1><a href="./">Norch Vuejs app</a> <span class="payoff">- Testing your search index</span></h1>
-  <div class="input-group input-group-lg">
-    <input id="searchbox"  type="text" class="form-control" v-model="queryinput" v-on:keyup="searchOn" v-on:keyup.enter="searchOn" placeholder="your query" autofocus/>
-    <span class="input-group-btn"><button class="btn button-lg btn-primary" v-on:click="searchOn">search</button><button class="btn button-lg btn-default" v-on:click="json()">JSON</button></span>
-  </div>
-  <!-- ### Search results ### -->
-
-  <div id="resultsSearchResults" v-if="results.searchresults.length > 0">    
-    <!-- ## Categories ## -->
-    <div id="categories">
-      <div v-for="categoryObj in results.categories">
-        <div class="filters" v-for="(categoryValue, categoryName, index) in categoryObj">
-          <h3>{{ categoryName }}</h3>
-          <span class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-primary" v-if="!filter.filter" v-on:click="filterOn(categoryName, filter.key, index)" class="btn--secondary" v-for="(filter, index) in categoryValue">{{ filter.key }} <span class="count">{{ filter.value }}</button></span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- ## Results info ## -->
-    <div class="result-info">
-      <h3>{{ uiHelpers.totalHits }} <span class="fillers">hits for</span> {{ queryinput }}
-        <span class="fillers">filtered on</span> <span  class="btn-group" role="group" aria-label="..."><button type="button" class="btn btn-default" v-on:click="filterOff(filteredOn.category, filteredOn.filter)" v-for="filteredOn in uiHelpers.filtered.categories">{{ filteredOn.category }} - {{ filteredOn.filter }}</button></span>
-        <span class="fillers">of</span> {{ uiHelpers.docCount }} <span class="fillers">documents in index</span></h3>
-    </div>
-
-
-    <!-- Search result items -->
-    <div class="result-item" v-for="items in results.searchresults">
-      <h3>{{ items.document.name }}</h3>
-      <img v-bind:src="items.document.image">
-      <pre>{{ items.document }}</pre>
-    </div>
-    <div id="allHitsDisplayed" v-if="uiHelpers.allHitsDisplayed"><h2>All {{ uiHelpers.totalHits }} hits displayed.</h3></div>
-  </div>
-
-  <!-- ### JSON ### -->
-  <div id="json" v-if="uiHelpers.json" />
-    <button class="btn button-md btn-default" v-on:click="json()">X</button>
-    <h3>config</h3>
-    <pre>{{ config }}</pre>
-    <h3>uiHelpers</h3>
-    <pre>{{ uiHelpers }}</pre>
-    <h3>q</h3>
-    <pre>{{ q }}</pre>
-    <h3>categories</h3>
-    <pre>{{ results.categories }}</pre>
-    <h3>searchresults</h3>
-    <pre>{{ results.searchresults }}</pre>
-  </div>
-  <div id="loading" v-if="uiHelpers.waitingForResults">... waiting for results ...</div>
+<div id="app" class="container">
+  <norch-queryinput></norch-queryinput>
+  <norch-
 </div>
 
 <script src="./norch.js"></script>

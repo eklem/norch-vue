@@ -1,4 +1,8 @@
+
+** New branch for serverless (browserbased) search. Nothing working in the [browser-based](https://github.com/eklem/norch-vue/tree/browser-based) branch.
+
 # norch-vue
+
 Vue.js frontend to the search engine [norch](https://github.com/fergiemcdowall/norch) / [search-index](https://github.com/fergiemcdowall/search-index). An easy way to get started with norch and test your dataset without much coding. (Will be without any coding at a later point in time)
 
 [![Join the chat at https://gitter.im/fergiemcdowall/search-index][gitter-image]][gitter-url]
