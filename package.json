@@ -1,7 +1,7 @@
 {
-  "name": "norch-vuejs-app",
+  "name": "norch-vue",
   "version": "0.1.0",
-  "description": "Search frontend for Norch search engine, written in vue.js",
+  "description": "Search frontend for search-index & Norch, written in vue.js",
   "main": "dist/norch.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
