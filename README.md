@@ -1,5 +1,5 @@
 
-** New branch for serverless (browserbased) search. Nothing working in the [browser-based](https://github.com/eklem/norch-vue/tree/browser-based) branch.
+**New branch for serverless (browserbased) search. Nothing working in the [browser-based](https://github.com/eklem/norch-vue/tree/browser-based) branch.**
 
 # norch-vue
 
@@ -9,9 +9,6 @@ Vue.js frontend to the search engine [norch](https://github.com/fergiemcdowall/n
 [![NPM version][npm-version-image]][npm-url]
 [![NPM downloads][npm-downloads-image]][npm-url]
 [![MIT License][license-image]][license-url]
-
-## Try it right away on Codepen.io
-[norch-vuejs-app@codepen.io](http://codepen.io/eklem/pen/YNyrMo)
 
 ## Install
 
