@@ -1,5 +1,5 @@
 
-**WIP - New branch for serverless (browserbased) search. Nothing working in the [browser-based](https://github.com/eklem/norch-vue/tree/browser-based) branch.**
+**WIP - New branch for serverless (browserbased) search. Nothing working in the [browser-based](https://github.com/eklem/norch-vue/tree/browser-based) branch. For old version, working with norch, check out [master branch](https://github.com/eklem/norch-vue/tree/master) or [NPM-package](https://www.npmjs.com/package/norch-vuejs-app).**
 
 # norch-vue
 
