@@ -1,8 +1,8 @@
 {
   "name": "norch-vuejs-app",
-  "version": "0.0.15",
+  "version": "0.1.0",
   "description": "Search frontend for Norch search engine, written in vue.js",
-  "main": "index.html",
+  "main": "dist/norch.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,8 +16,7 @@
     "javascript"
   ],
   "dependencies": {
-    "norch": "0.8.10",
-    "search-index-indexer": "0.2.9"
+    "search-index": "1.0.5"
   },
   "author": "Espen Klem",
   "license": "MIT",
