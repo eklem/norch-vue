@@ -1,27 +1,48 @@
 {
-  "name": "norch-vue",
+  "name": "norch-vue-new",
   "version": "0.1.0",
-  "description": "Search frontend for search-index & Norch, written in vue.js",
-  "main": "dist/norch.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eklem/norch-vuejs-app.git"
-  },
-  "keywords": [
-    "search",
-    "vuejs",
-    "javascript"
-  ],
   "dependencies": {
-    "search-index": "1.0.5"
+    "core-js": "^2.6.5",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.3"
   },
-  "author": "Espen Klem",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/eklem/norch-vuejs-app/issues"
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "vue-template-compiler": "^2.6.10"
   },
-  "homepage": "https://github.com/eklem/norch-vuejs-app#readme"
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "@vue/standard"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
 }
