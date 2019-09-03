@@ -1,4 +1,5 @@
-# norch-vue-new
+# norch-vue
+branch: browser-based
 
 ## Project setup
 ```
