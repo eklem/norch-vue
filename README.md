@@ -1,5 +1,4 @@
-# norch-vue
-branch: browser-based
+# search-index-vue
 
 ## Project setup
 ```
@@ -14,11 +13,6 @@ npm run serve
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
 ```
 
 ### Lints and fixes files
